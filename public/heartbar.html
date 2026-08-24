@@ -114,6 +114,15 @@
       $("clock").textContent = new Intl.DateTimeFormat("zh-CN", { hour:"2-digit", minute:"2-digit", second:"2-digit" }).format(new Date());
     }
 
+    let sizeFrame = 0;
+    function reportSize() {
+      cancelAnimationFrame(sizeFrame);
+      sizeFrame = requestAnimationFrame(() => {
+        const height = Math.ceil(document.documentElement.scrollHeight);
+        rpcNotify("ui/notifications/size-changed", { height });
+      });
+    }
+
     function render(next = {}) {
       const incoming = next && typeof next === "object" ? next : {};
       state = { ...state, ...incoming, records:Array.isArray(incoming.records) ? incoming.records.slice(0,4) : state.records };
@@ -133,6 +142,7 @@
       $("records").innerHTML = state.records.map((item) => `<div class="record"></div>`).join("");
       [...$("records").children].forEach((node,index) => { node.textContent = state.records[index]; });
       updateClock();
+      reportSize();
     }
 
     function reaction(action) {
@@ -190,7 +200,11 @@
       appInfo:{ name:"aevren-heartbar", version:"2.0.0" },
       appCapabilities:{},
       protocolVersion:"2026-01-26",
-    }).then(() => rpcNotify("ui/notifications/initialized", {}));
+    }).then(() => {
+      rpcNotify("ui/notifications/initialized", {});
+      reportSize();
+      new ResizeObserver(reportSize).observe(document.documentElement);
+    });
     bridgeReady.catch(() => {});
   </script>
 </body>
