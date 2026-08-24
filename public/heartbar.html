@@ -95,8 +95,8 @@
     const initialOutput = window.openai?.toolOutput;
     let state = {
       ...defaults,
-      ...(initialOutput && typeof initialOutput === "object" ? initialOutput : {}),
       ...(saved && typeof saved === "object" ? saved : {}),
+      ...(initialOutput && typeof initialOutput === "object" ? initialOutput : {}),
       records:Array.isArray(saved?.records) ? saved.records.slice(0,4) : [],
     };
     let rpcId = 0;
