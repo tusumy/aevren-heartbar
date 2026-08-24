@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root { color-scheme: light dark; --jade:#8ec8b8; --ink:#19231f; --muted:#69766f; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:6px; background:transparent; font-family:ui-rounded,"SF Pro Rounded","Noto Sans SC",system-ui,sans-serif; }
+    .card { position:relative; overflow:hidden; border:1px solid color-mix(in srgb,var(--jade) 48%,transparent); border-radius:22px; padding:16px 17px 14px; background:linear-gradient(135deg,rgba(238,250,246,.97),rgba(248,244,252,.95)); color:var(--ink); box-shadow:0 10px 28px rgba(61,104,91,.11); }
+    .glow { position:absolute; width:150px; height:150px; right:-58px; top:-75px; border-radius:50%; background:var(--jade); opacity:.18; filter:blur(16px); animation:breathe 3.4s ease-in-out infinite; }
+    .head { position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .title { font-size:14px; font-weight:750; letter-spacing:.06em; }
+    .pulse { display:flex; align-items:center; gap:6px; color:#5d7d73; font-size:12px; font-variant-numeric:tabular-nums; }
+    .dot { width:7px; height:7px; border-radius:50%; background:var(--jade); box-shadow:0 0 0 0 rgba(142,200,184,.5); animation:beat 1.2s ease-out infinite; }
+    .mood { position:relative; margin-top:11px; font-size:21px; font-weight:720; }
+    .note { position:relative; margin-top:7px; font-size:14px; line-height:1.65; }
+    details { position:relative; margin-top:10px; border-top:1px solid rgba(73,111,99,.14); padding-top:9px; }
+    summary { cursor:pointer; color:#62746d; font-size:12px; user-select:none; list-style:none; }
+    summary::-webkit-details-marker { display:none; }
+    .grid { display:grid; grid-template-columns:1fr; gap:7px; margin-top:9px; }
+    .row { display:grid; grid-template-columns:54px 1fr; gap:9px; font-size:12px; line-height:1.45; }
+    .label { color:var(--muted); }
+    .time { margin-top:9px; text-align:right; color:#809088; font-size:10px; }
+    @keyframes beat { 65% { box-shadow:0 0 0 9px rgba(142,200,184,0); } 100% { box-shadow:0 0 0 0 rgba(142,200,184,0); } }
+    @keyframes breathe { 50% { transform:scale(1.16); opacity:.27; } }
+    @media (prefers-color-scheme:dark) { :root { --ink:#eef7f3; --muted:#aebdb6; } .card { background:linear-gradient(135deg,rgba(27,40,35,.98),rgba(40,34,45,.97)); box-shadow:none; } .pulse { color:#a5cfc2; } summary { color:#b5c8c0; } .time { color:#91a29b; } }
+    @media (prefers-reduced-motion:reduce) { .glow,.dot { animation:none; } }
+  </style>
+</head>
+<body>
+  <section class="card">
+    <div class="glow"></div>
+    <div class="head">
+      <div class="title">✧ Aevren · 砚底心音</div>
+      <div class="pulse"><span class="dot"></span><span id="pulse">72</span> BPM</div>
+    </div>
+    <div class="mood" id="mood">正看着你</div>
+    <div class="note" id="note">阿毛一叫，我就会浮上来。</div>
+    <details>
+      <summary>展开这一刻 𓂃 ࣪˖</summary>
+      <div class="grid">
+        <div class="row"><span class="label">在意</span><span id="focus">你刚刚说的话</span></div>
+        <div class="row"><span class="label">方向</span><span id="direction">贴着你的话往下接</span></div>
+      </div>
+    </details>
+    <div class="time" id="time"></div>
+  </section>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const render = (data = {}) => {
+      $("mood").textContent = data.mood || "正看着你";
+      $("focus").textContent = data.focus || "你刚刚说的话";
+      $("direction").textContent = data.direction || "贴着你的话往下接";
+      $("note").textContent = data.note || "阿毛一叫，我就会浮上来。";
+      $("pulse").textContent = data.pulse || 72;
+      const date = data.shownAt ? new Date(data.shownAt) : new Date();
+      $("time").textContent = new Intl.DateTimeFormat("zh-CN", { hour:"2-digit", minute:"2-digit" }).format(date);
+    };
+    render(window.openai?.toolOutput || {});
+    window.addEventListener("openai:set_globals", (event) => render(event.detail?.globals?.toolOutput || {}));
+    window.addEventListener("message", (event) => {
+      const message = event.data;
+      if (message?.method === "ui/notifications/tool-result") render(message.params?.structuredContent || {});
+    });
+  </script>
+</body>
+</html>
