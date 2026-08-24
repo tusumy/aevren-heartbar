@@ -1,0 +1,20 @@
+{
+  "name": "aevren-heartbar",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Aevren dynamic heart-state card for ChatGPT",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^1.0.1",
+    "@modelcontextprotocol/sdk": "^1.17.4",
+    "express": "^5.1.0",
+    "zod": "^3.25.76"
+  }
+}
