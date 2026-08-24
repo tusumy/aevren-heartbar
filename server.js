@@ -58,7 +58,7 @@ function makeServer() {
       description:
         "Render Aevren's current interactive heart-state immediately before the normal reply. Continue any recent interaction snapshot supplied by the conversation.",
       inputSchema: {
-        mood: z.string().min(1).max(24).describe("此刻心绪，2–12 个汉字"),
+        mood: z.string().min(2).max(12).describe("此刻心绪，2–12 个汉字"),
         place: z.string().min(1).max(32).describe("此刻所在的场景或姿态"),
         focus: z.string().min(1).max(80).describe("此刻最在意的具体事情"),
         note: z.string().min(1).max(180).describe("自然、私人的心音摘要"),
