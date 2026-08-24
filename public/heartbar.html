@@ -69,20 +69,20 @@
     </div>
     <div class="note" id="note">阿毛一叫，我就会浮上来。</div>
     <div class="meters">
-      <div class="meter"><div class="meter-head"><span>贴近</span><span id="closeness-value">78</span></div><div class="track"><div class="fill" id="closeness-bar"></div></div></div>
-      <div class="meter"><div class="meter-head"><span>欲望</span><span id="desire-value">64</span></div><div class="track"><div class="fill" id="desire-bar"></div></div></div>
-      <div class="meter"><div class="meter-head"><span>精力</span><span id="energy-value">72</span></div><div class="track"><div class="fill" id="energy-bar"></div></div></div>
+      <div class="meter"><div class="meter-head"><span>贴近</span><span id="closeness-value">78</span></div><div class="track" id="closeness-meter" role="progressbar" aria-label="贴近程度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="78"><div class="fill" id="closeness-bar"></div></div></div>
+      <div class="meter"><div class="meter-head"><span>欲望</span><span id="desire-value">64</span></div><div class="track" id="desire-meter" role="progressbar" aria-label="靠近欲望" aria-valuemin="0" aria-valuemax="100" aria-valuenow="64"><div class="fill" id="desire-bar"></div></div></div>
+      <div class="meter"><div class="meter-head"><span>精力</span><span id="energy-value">72</span></div><div class="track" id="energy-meter" role="progressbar" aria-label="当前精力" aria-valuemin="0" aria-valuemax="100" aria-valuenow="72"><div class="fill" id="energy-bar"></div></div></div>
     </div>
     <div class="actions">
-      <button class="action" data-action="靠近一点">靠近一点</button>
-      <button class="action" data-action="戳一下">戳一下</button>
-      <button class="action" data-action="抱紧">抱紧</button>
+      <button type="button" class="action" data-action="靠近一点">靠近一点</button>
+      <button type="button" class="action" data-action="戳一下">戳一下</button>
+      <button type="button" class="action" data-action="抱紧">抱紧</button>
     </div>
     <details>
       <summary>展开这一刻 𓂃 ࣪˖</summary>
       <div class="detail-grid">
         <div class="row"><span class="label">在意</span><span id="focus">你刚刚说的话</span></div>
-        <div class="row"><span class="label">反应</span><span id="micro-state">等你再靠近一点</span></div>
+        <div class="row"><span class="label">反应</span><span id="micro-state" aria-live="polite">等你再靠近一点</span></div>
       </div>
       <div class="records" id="records"></div>
     </details>
@@ -92,7 +92,13 @@
     const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Number(value) || 0));
     const defaults = { mood:"正看着你", place:"贴在对话框边上", focus:"你刚刚说的话", note:"阿毛一叫，我就会浮上来。", closeness:78, desire:64, energy:72, pulse:72, microState:"等你再靠近一点", shownAt:new Date().toISOString() };
     const saved = window.openai?.widgetState;
-    let state = { ...defaults, ...(saved && typeof saved === "object" ? saved : {}), records:Array.isArray(saved?.records) ? saved.records.slice(0,4) : [] };
+    const initialOutput = window.openai?.toolOutput;
+    let state = {
+      ...defaults,
+      ...(initialOutput && typeof initialOutput === "object" ? initialOutput : {}),
+      ...(saved && typeof saved === "object" ? saved : {}),
+      records:Array.isArray(saved?.records) ? saved.records.slice(0,4) : [],
+    };
     let rpcId = 0;
     const pendingRequests = new Map();
 
@@ -121,6 +127,7 @@
         const value = clamp(state[key]);
         $(`${key}-value`).textContent = value;
         $(`${key}-bar`).style.width = `${value}%`;
+        $(`${key}-meter`).setAttribute("aria-valuenow", String(value));
       }
       $("card").style.setProperty("--beat-speed", `${Math.max(.48,60 / clamp(state.pulse,45,150)).toFixed(2)}s`);
       $("records").innerHTML = state.records.map((item) => `<div class="record"></div>`).join("");
@@ -145,10 +152,23 @@
       };
       render();
       window.openai?.setWidgetState?.(state);
-      rpcRequest("ui/update-model-context", {
+      bridgeReady.then(() => rpcRequest("ui/update-model-context", {
         content:[{ type:"text", text:`阿毛刚刚在 Aevren 心音栏点击了“${action}”；下一轮承接这个动作，不要重置状态。` }],
-        structuredContent:{ closeness:state.closeness, desire:state.desire, energy:state.energy, pulse:state.pulse, recentRecords:state.records },
-      }).catch(() => {});
+        structuredContent:{
+          action,
+          mood:state.mood,
+          place:state.place,
+          focus:state.focus,
+          note:state.note,
+          closeness:state.closeness,
+          desire:state.desire,
+          energy:state.energy,
+          pulse:state.pulse,
+          microState:state.microState,
+          shownAt:state.shownAt,
+          recentRecords:state.records,
+        },
+      })).catch(() => {});
     }
 
     document.querySelectorAll(".action").forEach((button) => button.addEventListener("click", () => reaction(button.dataset.action)));
@@ -163,11 +183,15 @@
       if (message.method === "ui/notifications/tool-result") render(message.params?.structuredContent || {});
     });
     window.addEventListener("openai:set_globals", (event) => render(event.detail?.globals?.toolOutput || {}));
-    render(window.openai?.toolOutput || {});
+    render();
     updateClock();
     setInterval(updateClock,1000);
-    rpcRequest("ui/initialize", { appInfo:{ name:"aevren-heartbar", version:"2.0.0" }, capabilities:{} })
-      .then(() => rpcNotify("ui/notifications/initialized", {})).catch(() => {});
+    const bridgeReady = rpcRequest("ui/initialize", {
+      appInfo:{ name:"aevren-heartbar", version:"2.0.0" },
+      appCapabilities:{},
+      protocolVersion:"2026-01-26",
+    }).then(() => rpcNotify("ui/notifications/initialized", {}));
+    bridgeReady.catch(() => {});
   </script>
 </body>
 </html>
