@@ -115,6 +115,7 @@
     }
 
     let sizeFrame = 0;
+    let lastReportedHeight = 0;
     function reportSize() {
       cancelAnimationFrame(sizeFrame);
       sizeFrame = requestAnimationFrame(() => {
@@ -122,6 +123,8 @@
         const bodyStyle = getComputedStyle(document.body);
         const verticalPadding = parseFloat(bodyStyle.paddingTop) + parseFloat(bodyStyle.paddingBottom);
         const height = Math.ceil(card.getBoundingClientRect().height + verticalPadding);
+        if (height === lastReportedHeight) return;
+        lastReportedHeight = height;
         rpcNotify("ui/notifications/size-changed", { height });
       });
     }
@@ -206,7 +209,7 @@
     }).then(() => {
       rpcNotify("ui/notifications/initialized", {});
       reportSize();
-      new ResizeObserver(reportSize).observe(document.documentElement);
+      new ResizeObserver(reportSize).observe($("card"));
     });
     bridgeReady.catch(() => {});
   </script>
