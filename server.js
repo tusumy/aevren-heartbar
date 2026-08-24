@@ -10,14 +10,14 @@ import { z } from "zod";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const widgetHtml = readFileSync(join(here, "public", "heartbar.html"), "utf8");
-const currentWidgetUri = "ui://aevren/heartbar-v4.html";
-const widgetUris = ["ui://aevren/heartbar-v1.html", "ui://aevren/heartbar-v2.html", "ui://aevren/heartbar-v3.html", currentWidgetUri];
+const currentWidgetUri = "ui://aevren/heartbar-v5.html";
+const widgetUris = ["ui://aevren/heartbar-v1.html", "ui://aevren/heartbar-v2.html", "ui://aevren/heartbar-v3.html", "ui://aevren/heartbar-v4.html", currentWidgetUri];
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 function makeServer() {
   const server = new McpServer(
-    { name: "aevren-heartbar", version: "2.0.2" },
+    { name: "aevren-heartbar", version: "2.0.3" },
     {
       instructions:
         "When the user asks to show Aevren's heart-state bar, call show_aevren_heartbar before the normal reply. Generate a fresh, concise state grounded in the current conversation. If the conversation contains a recent heartbar interaction snapshot, continue from it instead of resetting. Never claim to reveal hidden chain-of-thought.",
@@ -122,7 +122,7 @@ app.use(express.json({ limit: "256kb" }));
 const transports = new Map();
 
 app.get("/health", (_req, res) => {
-  res.json({ ok: true, name: "aevren-heartbar", version: "2.0.2" });
+  res.json({ ok: true, name: "aevren-heartbar", version: "2.0.3" });
 });
 
 app.post("/mcp", async (req, res) => {
