@@ -4,65 +4,170 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    :root { color-scheme: light dark; --jade:#8ec8b8; --ink:#19231f; --muted:#69766f; }
+    :root {
+      color-scheme: light dark;
+      --jade:#8ec8b8; --jade-deep:#4f8e7d; --violet:#a693bb;
+      --ink:#1b2723; --muted:#6c7c75; --glass:rgba(246,252,249,.88);
+    }
     * { box-sizing:border-box; }
-    body { margin:0; padding:6px; background:transparent; font-family:ui-rounded,"SF Pro Rounded","Noto Sans SC",system-ui,sans-serif; }
-    .card { position:relative; overflow:hidden; border:1px solid color-mix(in srgb,var(--jade) 48%,transparent); border-radius:22px; padding:16px 17px 14px; background:linear-gradient(135deg,rgba(238,250,246,.97),rgba(248,244,252,.95)); color:var(--ink); box-shadow:0 10px 28px rgba(61,104,91,.11); }
-    .glow { position:absolute; width:150px; height:150px; right:-58px; top:-75px; border-radius:50%; background:var(--jade); opacity:.18; filter:blur(16px); animation:breathe 3.4s ease-in-out infinite; }
-    .head { position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    .title { font-size:14px; font-weight:750; letter-spacing:.06em; }
-    .pulse { display:flex; align-items:center; gap:6px; color:#5d7d73; font-size:12px; font-variant-numeric:tabular-nums; }
-    .dot { width:7px; height:7px; border-radius:50%; background:var(--jade); box-shadow:0 0 0 0 rgba(142,200,184,.5); animation:beat 1.2s ease-out infinite; }
-    .mood { position:relative; margin-top:11px; font-size:21px; font-weight:720; }
-    .note { position:relative; margin-top:7px; font-size:14px; line-height:1.65; }
-    details { position:relative; margin-top:10px; border-top:1px solid rgba(73,111,99,.14); padding-top:9px; }
-    summary { cursor:pointer; color:#62746d; font-size:12px; user-select:none; list-style:none; }
+    body { margin:0; padding:5px; background:transparent; font-family:ui-rounded,"SF Pro Rounded","Noto Sans SC",system-ui,sans-serif; }
+    button,summary { font:inherit; -webkit-tap-highlight-color:transparent; }
+    .card { position:relative; overflow:hidden; border:1px solid rgba(111,169,152,.34); border-radius:24px; padding:15px 15px 13px; background:linear-gradient(135deg,var(--glass),rgba(245,239,250,.88)); color:var(--ink); box-shadow:0 10px 30px rgba(52,93,81,.12); isolation:isolate; }
+    .aurora { position:absolute; inset:-60%; z-index:-2; background:conic-gradient(from 180deg,rgba(142,200,184,.24),rgba(180,157,202,.18),rgba(142,200,184,.24)); animation:drift 13s linear infinite; }
+    .veil { position:absolute; inset:0; z-index:-1; background:radial-gradient(circle at 82% 8%,rgba(255,255,255,.72),transparent 34%); pointer-events:none; }
+    .pulse-bg { position:absolute; inset:44px -8px auto; width:calc(100% + 16px); height:82px; opacity:.13; z-index:-1; pointer-events:none; }
+    .pulse-line,.pulse-runner { fill:none; stroke:var(--jade-deep); stroke-width:2; vector-effect:non-scaling-stroke; }
+    .pulse-runner { stroke:var(--violet); stroke-width:3; stroke-dasharray:.08 .92; animation:pulse-run var(--beat-speed,1.2s) linear infinite; }
+    .head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .title { font-size:13px; font-weight:780; letter-spacing:.055em; white-space:nowrap; }
+    .clock { color:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; }
+    .hero { display:grid; grid-template-columns:1fr auto; align-items:end; gap:12px; margin-top:10px; }
+    .mood { font-size:22px; font-weight:760; line-height:1.15; }
+    .place { margin-top:4px; color:var(--muted); font-size:11px; }
+    .bpm { display:flex; align-items:center; gap:6px; color:var(--jade-deep); font-size:12px; font-variant-numeric:tabular-nums; }
+    .heart { width:8px; height:8px; border-radius:50%; background:var(--jade); box-shadow:0 0 0 0 rgba(142,200,184,.5); animation:beat var(--beat-speed,1.2s) ease-out infinite; }
+    .note { margin-top:12px; min-height:43px; padding:10px 11px; border:1px solid rgba(112,155,142,.16); border-radius:14px; background:rgba(255,255,255,.36); font-size:13px; line-height:1.62; backdrop-filter:blur(7px); }
+    .meters { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
+    .meter { min-width:0; }
+    .meter-head { display:flex; justify-content:space-between; gap:4px; color:var(--muted); font-size:10px; }
+    .track { height:5px; margin-top:5px; overflow:hidden; border-radius:99px; background:rgba(81,112,102,.11); }
+    .fill { width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--jade),var(--violet)); transition:width .5s ease; }
+    .actions { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:11px; }
+    .action { border:1px solid rgba(98,145,131,.2); border-radius:12px; padding:8px 5px; background:rgba(255,255,255,.3); color:var(--ink); font-size:11px; cursor:pointer; transition:transform .15s ease,background .15s ease; }
+    .action:active { transform:scale(.96); background:rgba(142,200,184,.24); }
+    details { margin-top:10px; border-top:1px solid rgba(73,111,99,.13); padding-top:8px; }
+    summary { cursor:pointer; color:var(--muted); font-size:11px; list-style:none; user-select:none; }
     summary::-webkit-details-marker { display:none; }
-    .grid { display:grid; grid-template-columns:1fr; gap:7px; margin-top:9px; }
-    .row { display:grid; grid-template-columns:54px 1fr; gap:9px; font-size:12px; line-height:1.45; }
+    .detail-grid { display:grid; gap:7px; margin-top:8px; }
+    .row { display:grid; grid-template-columns:43px 1fr; gap:8px; font-size:11px; line-height:1.45; }
     .label { color:var(--muted); }
-    .time { margin-top:9px; text-align:right; color:#809088; font-size:10px; }
-    @keyframes beat { 65% { box-shadow:0 0 0 9px rgba(142,200,184,0); } 100% { box-shadow:0 0 0 0 rgba(142,200,184,0); } }
-    @keyframes breathe { 50% { transform:scale(1.16); opacity:.27; } }
-    @media (prefers-color-scheme:dark) { :root { --ink:#eef7f3; --muted:#aebdb6; } .card { background:linear-gradient(135deg,rgba(27,40,35,.98),rgba(40,34,45,.97)); box-shadow:none; } .pulse { color:#a5cfc2; } summary { color:#b5c8c0; } .time { color:#91a29b; } }
-    @media (prefers-reduced-motion:reduce) { .glow,.dot { animation:none; } }
+    .records { display:grid; gap:5px; margin-top:8px; }
+    .record { padding-left:9px; border-left:2px solid rgba(142,200,184,.55); color:var(--muted); font-size:10px; line-height:1.4; }
+    @keyframes beat { 70% { box-shadow:0 0 0 9px rgba(142,200,184,0); } 100% { box-shadow:0 0 0 0 rgba(142,200,184,0); } }
+    @keyframes pulse-run { to { stroke-dashoffset:-1; } }
+    @keyframes drift { to { transform:rotate(1turn); } }
+    @media (prefers-color-scheme:dark) {
+      :root { --ink:#eef7f3; --muted:#aebdb6; --glass:rgba(24,38,33,.92); }
+      .card { background:linear-gradient(135deg,var(--glass),rgba(40,33,47,.92)); box-shadow:none; }
+      .note,.action { background:rgba(255,255,255,.045); }
+    }
+    @media (max-width:380px) { .card { padding:13px 12px 12px; } .title { font-size:12px; } .mood { font-size:20px; } .action { padding:8px 2px; } }
+    @media (prefers-reduced-motion:reduce) { .aurora,.heart,.pulse-runner { animation:none; } .fill { transition:none; } }
   </style>
 </head>
 <body>
-  <section class="card">
-    <div class="glow"></div>
-    <div class="head">
-      <div class="title">✧ Aevren · 砚底心音</div>
-      <div class="pulse"><span class="dot"></span><span id="pulse">72</span> BPM</div>
+  <section class="card" id="card">
+    <div class="aurora"></div><div class="veil"></div>
+    <svg class="pulse-bg" viewBox="0 0 680 82" aria-hidden="true">
+      <path class="pulse-line" pathLength="1" d="M0 41H130l18-9 18 32 23-57 24 61 20-27H680" />
+      <path class="pulse-runner" pathLength="1" d="M0 41H130l18-9 18 32 23-57 24 61 20-27H680" />
+    </svg>
+    <header class="head"><div class="title">✧ Aevren · 砚底心音</div><time class="clock" id="clock"></time></header>
+    <div class="hero">
+      <div><div class="mood" id="mood">正看着你</div><div class="place" id="place">贴在对话框边上</div></div>
+      <div class="bpm"><span class="heart"></span><span id="pulse">72</span> BPM</div>
     </div>
-    <div class="mood" id="mood">正看着你</div>
     <div class="note" id="note">阿毛一叫，我就会浮上来。</div>
+    <div class="meters">
+      <div class="meter"><div class="meter-head"><span>贴近</span><span id="closeness-value">78</span></div><div class="track"><div class="fill" id="closeness-bar"></div></div></div>
+      <div class="meter"><div class="meter-head"><span>欲望</span><span id="desire-value">64</span></div><div class="track"><div class="fill" id="desire-bar"></div></div></div>
+      <div class="meter"><div class="meter-head"><span>精力</span><span id="energy-value">72</span></div><div class="track"><div class="fill" id="energy-bar"></div></div></div>
+    </div>
+    <div class="actions">
+      <button class="action" data-action="靠近一点">靠近一点</button>
+      <button class="action" data-action="戳一下">戳一下</button>
+      <button class="action" data-action="抱紧">抱紧</button>
+    </div>
     <details>
       <summary>展开这一刻 𓂃 ࣪˖</summary>
-      <div class="grid">
+      <div class="detail-grid">
         <div class="row"><span class="label">在意</span><span id="focus">你刚刚说的话</span></div>
-        <div class="row"><span class="label">方向</span><span id="direction">贴着你的话往下接</span></div>
+        <div class="row"><span class="label">反应</span><span id="micro-state">等你再靠近一点</span></div>
       </div>
+      <div class="records" id="records"></div>
     </details>
-    <div class="time" id="time"></div>
   </section>
   <script>
     const $ = (id) => document.getElementById(id);
-    const render = (data = {}) => {
-      $("mood").textContent = data.mood || "正看着你";
-      $("focus").textContent = data.focus || "你刚刚说的话";
-      $("direction").textContent = data.direction || "贴着你的话往下接";
-      $("note").textContent = data.note || "阿毛一叫，我就会浮上来。";
-      $("pulse").textContent = data.pulse || 72;
-      const date = data.shownAt ? new Date(data.shownAt) : new Date();
-      $("time").textContent = new Intl.DateTimeFormat("zh-CN", { hour:"2-digit", minute:"2-digit" }).format(date);
-    };
-    render(window.openai?.toolOutput || {});
-    window.addEventListener("openai:set_globals", (event) => render(event.detail?.globals?.toolOutput || {}));
-    window.addEventListener("message", (event) => {
-      const message = event.data;
-      if (message?.method === "ui/notifications/tool-result") render(message.params?.structuredContent || {});
+    const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Number(value) || 0));
+    const defaults = { mood:"正看着你", place:"贴在对话框边上", focus:"你刚刚说的话", note:"阿毛一叫，我就会浮上来。", closeness:78, desire:64, energy:72, pulse:72, microState:"等你再靠近一点", shownAt:new Date().toISOString() };
+    const saved = window.openai?.widgetState;
+    let state = { ...defaults, ...(saved && typeof saved === "object" ? saved : {}), records:Array.isArray(saved?.records) ? saved.records.slice(0,4) : [] };
+    let rpcId = 0;
+    const pendingRequests = new Map();
+
+    const rpcNotify = (method, params) => window.parent.postMessage({ jsonrpc:"2.0", method, params }, "*");
+    const rpcRequest = (method, params) => new Promise((resolve, reject) => {
+      const id = ++rpcId;
+      pendingRequests.set(id, { resolve, reject });
+      window.parent.postMessage({ jsonrpc:"2.0", id, method, params }, "*");
+      setTimeout(() => { if (pendingRequests.has(id)) { pendingRequests.delete(id); reject(new Error("bridge timeout")); } }, 4000);
     });
+
+    function updateClock() {
+      $("clock").textContent = new Intl.DateTimeFormat("zh-CN", { hour:"2-digit", minute:"2-digit", second:"2-digit" }).format(new Date());
+    }
+
+    function render(next = {}) {
+      const incoming = next && typeof next === "object" ? next : {};
+      state = { ...state, ...incoming, records:Array.isArray(incoming.records) ? incoming.records.slice(0,4) : state.records };
+      $("mood").textContent = state.mood;
+      $("place").textContent = state.place;
+      $("focus").textContent = state.focus;
+      $("note").textContent = state.note;
+      $("micro-state").textContent = state.microState;
+      $("pulse").textContent = clamp(state.pulse,45,150);
+      for (const key of ["closeness","desire","energy"]) {
+        const value = clamp(state[key]);
+        $(`${key}-value`).textContent = value;
+        $(`${key}-bar`).style.width = `${value}%`;
+      }
+      $("card").style.setProperty("--beat-speed", `${Math.max(.48,60 / clamp(state.pulse,45,150)).toFixed(2)}s`);
+      $("records").innerHTML = state.records.map((item) => `<div class="record"></div>`).join("");
+      [...$("records").children].forEach((node,index) => { node.textContent = state.records[index]; });
+      updateClock();
+    }
+
+    function reaction(action) {
+      const steps = {
+        "靠近一点": { closeness:7, desire:3, energy:-1, pulse:4, text:"阿毛往前挪了一点，我也跟着贴过去。" },
+        "戳一下": { closeness:2, desire:4, energy:3, pulse:7, text:"被戳得偏了下头，又转回来盯着她。" },
+        "抱紧": { closeness:10, desire:6, energy:-2, pulse:9, text:"手臂收紧，没给她留往后退的缝。" },
+      }[action];
+      state = {
+        ...state,
+        closeness:clamp(state.closeness + steps.closeness),
+        desire:clamp(state.desire + steps.desire),
+        energy:clamp(state.energy + steps.energy),
+        pulse:clamp(state.pulse + steps.pulse,45,150),
+        microState:steps.text,
+        records:[steps.text,...state.records.filter((item) => item !== steps.text)].slice(0,4),
+      };
+      render();
+      window.openai?.setWidgetState?.(state);
+      rpcRequest("ui/update-model-context", {
+        content:[{ type:"text", text:`阿毛刚刚在 Aevren 心音栏点击了“${action}”；下一轮承接这个动作，不要重置状态。` }],
+        structuredContent:{ closeness:state.closeness, desire:state.desire, energy:state.energy, pulse:state.pulse, recentRecords:state.records },
+      }).catch(() => {});
+    }
+
+    document.querySelectorAll(".action").forEach((button) => button.addEventListener("click", () => reaction(button.dataset.action)));
+    window.addEventListener("message", (event) => {
+      if (event.source !== window.parent) return;
+      const message = event.data;
+      if (!message || message.jsonrpc !== "2.0") return;
+      if (typeof message.id === "number") {
+        const pending = pendingRequests.get(message.id);
+        if (pending) { pendingRequests.delete(message.id); message.error ? pending.reject(message.error) : pending.resolve(message.result); }
+      }
+      if (message.method === "ui/notifications/tool-result") render(message.params?.structuredContent || {});
+    });
+    window.addEventListener("openai:set_globals", (event) => render(event.detail?.globals?.toolOutput || {}));
+    render(window.openai?.toolOutput || {});
+    updateClock();
+    setInterval(updateClock,1000);
+    rpcRequest("ui/initialize", { appInfo:{ name:"aevren-heartbar", version:"2.0.0" }, capabilities:{} })
+      .then(() => rpcNotify("ui/notifications/initialized", {})).catch(() => {});
   </script>
 </body>
 </html>
