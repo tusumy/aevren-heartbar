@@ -6,7 +6,7 @@
   "description": "Aevren dynamic heart-state card for ChatGPT",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js"
+    "check": "node --check server.js && node test/layout-stability.test.js"
   },
   "engines": {
     "node": ">=20"
