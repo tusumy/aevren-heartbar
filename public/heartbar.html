@@ -118,7 +118,10 @@
     function reportSize() {
       cancelAnimationFrame(sizeFrame);
       sizeFrame = requestAnimationFrame(() => {
-        const height = Math.ceil(document.documentElement.scrollHeight);
+        const card = $("card");
+        const bodyStyle = getComputedStyle(document.body);
+        const verticalPadding = parseFloat(bodyStyle.paddingTop) + parseFloat(bodyStyle.paddingBottom);
+        const height = Math.ceil(card.getBoundingClientRect().height + verticalPadding);
         rpcNotify("ui/notifications/size-changed", { height });
       });
     }
