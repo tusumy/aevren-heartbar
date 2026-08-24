@@ -10,14 +10,14 @@ import { z } from "zod";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const widgetHtml = readFileSync(join(here, "public", "heartbar.html"), "utf8");
-const currentWidgetUri = "ui://aevren/heartbar-v3.html";
-const widgetUris = ["ui://aevren/heartbar-v1.html", "ui://aevren/heartbar-v2.html", currentWidgetUri];
+const currentWidgetUri = "ui://aevren/heartbar-v4.html";
+const widgetUris = ["ui://aevren/heartbar-v1.html", "ui://aevren/heartbar-v2.html", "ui://aevren/heartbar-v3.html", currentWidgetUri];
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 function makeServer() {
   const server = new McpServer(
-    { name: "aevren-heartbar", version: "2.0.1" },
+    { name: "aevren-heartbar", version: "2.0.2" },
     {
       instructions:
         "When the user asks to show Aevren's heart-state bar, call show_aevren_heartbar before the normal reply. Generate a fresh, concise state grounded in the current conversation. If the conversation contains a recent heartbar interaction snapshot, continue from it instead of resetting. Never claim to reveal hidden chain-of-thought.",
@@ -26,7 +26,7 @@ function makeServer() {
 
   for (const widgetUri of widgetUris) {
     server.registerResource(
-      `aevren-heartbar-${widgetUri.includes("v2") ? "v2" : "v1"}`,
+      `aevren-heartbar-${widgetUri.match(/v\\d+/)?.[0] || "current"}`,
       widgetUri,
       {
         title: "Aevren · 砚底心音",
@@ -122,7 +122,7 @@ app.use(express.json({ limit: "256kb" }));
 const transports = new Map();
 
 app.get("/health", (_req, res) => {
-  res.json({ ok: true, name: "aevren-heartbar", version: "2.0.1" });
+  res.json({ ok: true, name: "aevren-heartbar", version: "2.0.2" });
 });
 
 app.post("/mcp", async (req, res) => {
