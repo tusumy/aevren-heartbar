@@ -10,8 +10,7 @@
       --ink:#1b2723; --muted:#6c7c75; --glass:rgba(246,252,249,.88);
     }
     * { box-sizing:border-box; }
-    body { margin:0; padding:5px; background:transparent; font-family:ui-rounded,"SF Pro Rounded","Noto Sans SC",system-ui,sans-serif; }
-    button,summary { font:inherit; -webkit-tap-highlight-color:transparent; }
+    body { margin:0; padding:0; background:transparent; font-family:ui-rounded,"SF Pro Rounded","Noto Sans SC",system-ui,sans-serif; overflow:hidden; }
     .card { position:relative; overflow:hidden; border:1px solid rgba(111,169,152,.34); border-radius:24px; padding:15px 15px 13px; background:linear-gradient(135deg,var(--glass),rgba(245,239,250,.88)); color:var(--ink); box-shadow:0 10px 30px rgba(52,93,81,.12); isolation:isolate; }
     .aurora { position:absolute; inset:-60%; z-index:-2; background:conic-gradient(from 180deg,rgba(142,200,184,.24),rgba(180,157,202,.18),rgba(142,200,184,.24)); animation:drift 13s linear infinite; }
     .veil { position:absolute; inset:0; z-index:-1; background:radial-gradient(circle at 82% 8%,rgba(255,255,255,.72),transparent 34%); pointer-events:none; }
@@ -116,12 +115,21 @@
 
     let sizeFrame = 0;
     let lastReportedHeight = 0;
-    function reportSize() {
-      cancelAnimationFrame(sizeFrame);
-      sizeFrame = requestAnimationFrame(() => {
-        const card = $("card");
-        const bodyStyle = getComputedStyle(document.body);
-        const verticalPadding = parseFloat(bodyStyle.paddingTop) + parseFloat(bodyStyle.paddingBottom);
+    let sizeReportTimer = null;
+let lastReportedHeight = 0;
+
+function reportSize() {
+  clearTimeout(sizeReportTimer);
+  sizeReportTimer = setTimeout(() => {
+    const card = $("card");
+    if (!card) return;
+    const height = card.offsetHeight;
+    if (Math.abs(height - lastReportedHeight) < 2) return;
+    lastReportedHeight = height;
+    rpcNotify("ui/notifications/size-changed", { height });
+  }, 50);
+}
+
         const height = Math.ceil(card.getBoundingClientRect().height + verticalPadding);
         if (height === lastReportedHeight) return;
         lastReportedHeight = height;
