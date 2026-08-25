@@ -21,11 +21,11 @@
     .title { font-size:13px; font-weight:780; letter-spacing:.055em; white-space:nowrap; }
     .clock { color:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; }
     .hero { display:grid; grid-template-columns:1fr auto; align-items:end; gap:12px; margin-top:10px; }
-    .mood { font-size:22px; font-weight:760; line-height:1.15; }
-    .place { margin-top:4px; color:var(--muted); font-size:11px; }
+    .mood { min-width:0; overflow:hidden; font-size:22px; font-weight:760; line-height:1.15; text-overflow:ellipsis; white-space:nowrap; }
+    .place { margin-top:4px; overflow:hidden; color:var(--muted); font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
     .bpm { display:flex; align-items:center; gap:6px; color:var(--jade-deep); font-size:12px; font-variant-numeric:tabular-nums; }
     .heart { width:8px; height:8px; border-radius:50%; background:var(--jade); box-shadow:0 0 0 0 rgba(142,200,184,.5); animation:beat var(--beat-speed,1.2s) ease-out infinite; }
-    .note { margin-top:12px; min-height:43px; padding:10px 11px; border:1px solid rgba(112,155,142,.16); border-radius:14px; background:rgba(255,255,255,.36); font-size:13px; line-height:1.62; backdrop-filter:blur(7px); }
+    .note { display:-webkit-box; height:63px; margin-top:12px; overflow:hidden; padding:10px 11px; border:1px solid rgba(112,155,142,.16); border-radius:14px; background:rgba(255,255,255,.36); font-size:13px; line-height:1.62; -webkit-box-orient:vertical; -webkit-line-clamp:2; backdrop-filter:blur(7px); }
     .meters { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
     .meter { min-width:0; }
     .meter-head { display:flex; justify-content:space-between; gap:4px; color:var(--muted); font-size:10px; }
@@ -102,6 +102,18 @@
     };
     let rpcId = 0;
     const pendingRequests = new Map();
+    let heightFrame = 0;
+    let lastReportedHeight = 0;
+
+    function reportIntrinsicHeight() {
+      cancelAnimationFrame(heightFrame);
+      heightFrame = requestAnimationFrame(() => {
+        const height = Math.ceil(document.documentElement.scrollHeight);
+        if (!height || height === lastReportedHeight) return;
+        lastReportedHeight = height;
+        window.openai?.notifyIntrinsicHeight?.(height);
+      });
+    }
 
     const rpcNotify = (method, params) => window.parent.postMessage({ jsonrpc:"2.0", method, params }, "*");
     const rpcRequest = (method, params) => new Promise((resolve, reject) => {
@@ -133,6 +145,7 @@
       $("card").style.setProperty("--beat-speed", `${Math.max(.48,60 / clamp(state.pulse,45,150)).toFixed(2)}s`);
       $("records").innerHTML = state.records.map((item) => `<div class="record">${escapeHtml(item)}</div>`).join("");
       updateClock();
+      reportIntrinsicHeight();
     }
 
     function reaction(action) {
@@ -184,6 +197,9 @@
     });
 
     window.addEventListener("openai:set_globals", (event) => render(event.detail?.globals?.toolOutput || {}));
+    document.querySelector("details").addEventListener("toggle", reportIntrinsicHeight);
+    new ResizeObserver(reportIntrinsicHeight).observe(document.getElementById("card"));
+    window.addEventListener("load", reportIntrinsicHeight, { once:true });
     
     render();
     updateClock();
