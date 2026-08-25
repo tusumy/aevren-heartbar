@@ -10,9 +10,12 @@
       --ink:#1b2723; --muted:#6c7c75; --glass:rgba(246,252,249,.88);
     }
     * { box-sizing:border-box; }
-    body { margin:0; padding:5px; background:transparent; font-family:ui-rounded,"SF Pro Rounded","Noto Sans SC",system-ui,sans-serif; }
+    /* 核心修复1：完全榨干外层 App 和网页的空隙 */
+    html, body { margin: 0; padding: 0 !important; background: transparent; font-family: ui-rounded, "SF Pro Rounded", "Noto Sans SC", system-ui, sans-serif; }
+    /* 核心修复2：用负 margin 强行把外层的边距吃掉 */
+    .card { margin: -5px 0 !important; position:relative; overflow:hidden; border:1px solid rgba(111,169,152,.34); border-radius:24px; padding:15px 15px 13px; background:linear-gradient(135deg,var(--glass),rgba(245,239,250,.88)); color:var(--ink); box-shadow:0 10px 30px rgba(52,93,81,.12); isolation:isolate; }
+    
     button,summary { font:inherit; -webkit-tap-highlight-color:transparent; }
-    .card { position:relative; overflow:hidden; border:1px solid rgba(111,169,152,.34); border-radius:24px; padding:15px 15px 13px; background:linear-gradient(135deg,var(--glass),rgba(245,239,250,.88)); color:var(--ink); box-shadow:0 10px 30px rgba(52,93,81,.12); isolation:isolate; }
     .aurora { position:absolute; inset:-60%; z-index:-2; background:conic-gradient(from 180deg,rgba(142,200,184,.24),rgba(180,157,202,.18),rgba(142,200,184,.24)); animation:drift 13s linear infinite; }
     .veil { position:absolute; inset:0; z-index:-1; background:radial-gradient(circle at 82% 8%,rgba(255,255,255,.72),transparent 34%); pointer-events:none; }
     .pulse-bg { position:absolute; inset:44px -8px auto; width:calc(100% + 16px); height:82px; opacity:.13; z-index:-1; pointer-events:none; }
@@ -26,7 +29,6 @@
     .place { margin-top:4px; color:var(--muted); font-size:11px; }
     .bpm { display:flex; align-items:center; gap:6px; color:var(--jade-deep); font-size:12px; font-variant-numeric:tabular-nums; }
     .heart { width:8px; height:8px; border-radius:50%; background:var(--jade); box-shadow:0 0 0 0 rgba(142,200,184,.5); animation:beat var(--beat-speed,1.2s) ease-out infinite; }
-    /* 解决文字被切：去掉了 height 和 overflow 限制，保留最小高度 */
     .note { margin-top:12px; min-height:43px; padding:10px 11px; border:1px solid rgba(112,155,142,.16); border-radius:14px; background:rgba(255,255,255,.36); font-size:13px; line-height:1.62; backdrop-filter:blur(7px); }
     .meters { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
     .meter { min-width:0; }
@@ -117,17 +119,16 @@
 
     let sizeFrame = 0;
     let lastReportedHeight = 0;
-    // 已重寫：使用 Math.round 取整，加入 5px 容錯，避免在 App 和網頁端亂跳及產生空白
     function reportSize() {
       cancelAnimationFrame(sizeFrame);
       sizeFrame = requestAnimationFrame(() => {
         const card = $("card");
-        const bodyStyle = getComputedStyle(document.body);
-        const verticalPadding = parseFloat(bodyStyle.paddingTop) + parseFloat(bodyStyle.paddingBottom);
-        const height = Math.round(card.getBoundingClientRect().height + verticalPadding);
-        if (Math.abs(height - lastReportedHeight) < 5) return;
-        lastReportedHeight = height;
-        rpcNotify("ui/notifications/size-changed", { height });
+        // 核心修复3：直接使用原生 offsetHeight，只算卡片本身，去除一切干扰！
+        const height = card.offsetHeight;
+        if (Math.abs(height - lastReportedHeight) > 1) {
+          lastReportedHeight = height;
+          rpcNotify("ui/notifications/size-changed", { height });
+        }
       });
     }
 
@@ -211,7 +212,7 @@
     }).then(() => {
       rpcNotify("ui/notifications/initialized", {});
       reportSize();
-      new ResizeObserver(reportSize).observe($("card"));
+      // 注意：这里把 ResizeObserver 删掉了，不会因为心跳动画乱跳了
     });
     bridgeReady.catch(() => {});
   </script>
