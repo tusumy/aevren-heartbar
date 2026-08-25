@@ -10,7 +10,8 @@
       --ink:#1b2723; --muted:#6c7c75; --glass:rgba(246,252,249,.88);
     }
     * { box-sizing:border-box; }
-    body { margin:0; padding:0; background:transparent; font-family:ui-rounded,"SF Pro Rounded","Noto Sans SC",system-ui,sans-serif; overflow:hidden; }
+    body { margin:0; padding:5px; background:transparent; font-family:ui-rounded,"SF Pro Rounded","Noto Sans SC",system-ui,sans-serif; }
+    button,summary { font:inherit; -webkit-tap-highlight-color:transparent; }
     .card { position:relative; overflow:hidden; border:1px solid rgba(111,169,152,.34); border-radius:24px; padding:15px 15px 13px; background:linear-gradient(135deg,var(--glass),rgba(245,239,250,.88)); color:var(--ink); box-shadow:0 10px 30px rgba(52,93,81,.12); isolation:isolate; }
     .aurora { position:absolute; inset:-60%; z-index:-2; background:conic-gradient(from 180deg,rgba(142,200,184,.24),rgba(180,157,202,.18),rgba(142,200,184,.24)); animation:drift 13s linear infinite; }
     .veil { position:absolute; inset:0; z-index:-1; background:radial-gradient(circle at 82% 8%,rgba(255,255,255,.72),transparent 34%); pointer-events:none; }
@@ -21,11 +22,12 @@
     .title { font-size:13px; font-weight:780; letter-spacing:.055em; white-space:nowrap; }
     .clock { color:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; }
     .hero { display:grid; grid-template-columns:1fr auto; align-items:end; gap:12px; margin-top:10px; }
-    .mood { min-width:0; overflow:hidden; font-size:22px; font-weight:760; line-height:1.15; text-overflow:ellipsis; white-space:nowrap; }
-    .place { margin-top:4px; overflow:hidden; color:var(--muted); font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
+    .mood { font-size:22px; font-weight:760; line-height:1.15; }
+    .place { margin-top:4px; color:var(--muted); font-size:11px; }
     .bpm { display:flex; align-items:center; gap:6px; color:var(--jade-deep); font-size:12px; font-variant-numeric:tabular-nums; }
     .heart { width:8px; height:8px; border-radius:50%; background:var(--jade); box-shadow:0 0 0 0 rgba(142,200,184,.5); animation:beat var(--beat-speed,1.2s) ease-out infinite; }
-    .note { display:-webkit-box; height:63px; margin-top:12px; overflow:hidden; padding:10px 11px; border:1px solid rgba(112,155,142,.16); border-radius:14px; background:rgba(255,255,255,.36); font-size:13px; line-height:1.62; -webkit-box-orient:vertical; -webkit-line-clamp:2; backdrop-filter:blur(7px); }
+    /* 解决文字被切：去掉了 height 和 overflow 限制，保留最小高度 */
+    .note { margin-top:12px; min-height:43px; padding:10px 11px; border:1px solid rgba(112,155,142,.16); border-radius:14px; background:rgba(255,255,255,.36); font-size:13px; line-height:1.62; backdrop-filter:blur(7px); }
     .meters { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
     .meter { min-width:0; }
     .meter-head { display:flex; justify-content:space-between; gap:4px; color:var(--muted); font-size:10px; }
@@ -89,8 +91,6 @@
   <script>
     const $ = (id) => document.getElementById(id);
     const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Number(value) || 0));
-    const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-    
     const defaults = { mood:"正看着你", place:"贴在对话框边上", focus:"你刚刚说的话", note:"阿毛一叫，我就会浮上来。", closeness:78, desire:64, energy:72, pulse:72, microState:"等你再靠近一点", shownAt:new Date().toISOString() };
     const saved = window.openai?.widgetState;
     const initialOutput = window.openai?.toolOutput;
@@ -102,18 +102,6 @@
     };
     let rpcId = 0;
     const pendingRequests = new Map();
-    let heightFrame = 0;
-    let lastReportedHeight = 0;
-
-    function reportIntrinsicHeight() {
-      cancelAnimationFrame(heightFrame);
-      heightFrame = requestAnimationFrame(() => {
-        const height = Math.ceil(document.documentElement.scrollHeight);
-        if (!height || height === lastReportedHeight) return;
-        lastReportedHeight = height;
-        window.openai?.notifyIntrinsicHeight?.(height);
-      });
-    }
 
     const rpcNotify = (method, params) => window.parent.postMessage({ jsonrpc:"2.0", method, params }, "*");
     const rpcRequest = (method, params) => new Promise((resolve, reject) => {
@@ -125,6 +113,22 @@
 
     function updateClock() {
       $("clock").textContent = new Intl.DateTimeFormat("zh-CN", { hour:"2-digit", minute:"2-digit", second:"2-digit" }).format(new Date());
+    }
+
+    let sizeFrame = 0;
+    let lastReportedHeight = 0;
+    // 已重寫：使用 Math.round 取整，加入 5px 容錯，避免在 App 和網頁端亂跳及產生空白
+    function reportSize() {
+      cancelAnimationFrame(sizeFrame);
+      sizeFrame = requestAnimationFrame(() => {
+        const card = $("card");
+        const bodyStyle = getComputedStyle(document.body);
+        const verticalPadding = parseFloat(bodyStyle.paddingTop) + parseFloat(bodyStyle.paddingBottom);
+        const height = Math.round(card.getBoundingClientRect().height + verticalPadding);
+        if (Math.abs(height - lastReportedHeight) < 5) return;
+        lastReportedHeight = height;
+        rpcNotify("ui/notifications/size-changed", { height });
+      });
     }
 
     function render(next = {}) {
@@ -143,9 +147,10 @@
         $(`${key}-meter`).setAttribute("aria-valuenow", String(value));
       }
       $("card").style.setProperty("--beat-speed", `${Math.max(.48,60 / clamp(state.pulse,45,150)).toFixed(2)}s`);
-      $("records").innerHTML = state.records.map((item) => `<div class="record">${escapeHtml(item)}</div>`).join("");
+      $("records").innerHTML = state.records.map((item) => `<div class="record"></div>`).join("");
+      [...$("records").children].forEach((node,index) => { node.textContent = state.records[index]; });
       updateClock();
-      reportIntrinsicHeight();
+      reportSize();
     }
 
     function reaction(action) {
@@ -195,22 +200,18 @@
       }
       if (message.method === "ui/notifications/tool-result") render(message.params?.structuredContent || {});
     });
-
     window.addEventListener("openai:set_globals", (event) => render(event.detail?.globals?.toolOutput || {}));
-    document.querySelector("details").addEventListener("toggle", reportIntrinsicHeight);
-    new ResizeObserver(reportIntrinsicHeight).observe(document.getElementById("card"));
-    window.addEventListener("load", reportIntrinsicHeight, { once:true });
-    
     render();
     updateClock();
     setInterval(updateClock,1000);
-
     const bridgeReady = rpcRequest("ui/initialize", {
       appInfo:{ name:"aevren-heartbar", version:"2.0.0" },
       appCapabilities:{},
       protocolVersion:"2026-01-26",
     }).then(() => {
       rpcNotify("ui/notifications/initialized", {});
+      reportSize();
+      new ResizeObserver(reportSize).observe($("card"));
     });
     bridgeReady.catch(() => {});
   </script>
