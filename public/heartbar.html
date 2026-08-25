@@ -89,6 +89,8 @@
   <script>
     const $ = (id) => document.getElementById(id);
     const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Number(value) || 0));
+    const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    
     const defaults = { mood:"正看着你", place:"贴在对话框边上", focus:"你刚刚说的话", note:"阿毛一叫，我就会浮上来。", closeness:78, desire:64, energy:72, pulse:72, microState:"等你再靠近一点", shownAt:new Date().toISOString() };
     const saved = window.openai?.widgetState;
     const initialOutput = window.openai?.toolOutput;
@@ -113,28 +115,19 @@
       $("clock").textContent = new Intl.DateTimeFormat("zh-CN", { hour:"2-digit", minute:"2-digit", second:"2-digit" }).format(new Date());
     }
 
-    let sizeFrame = 0;
-    let lastReportedHeight = 0;
     let sizeReportTimer = null;
-let lastReportedHeight = 0;
+    let lastReportedHeight = 0;
 
-function reportSize() {
-  clearTimeout(sizeReportTimer);
-  sizeReportTimer = setTimeout(() => {
-    const card = $("card");
-    if (!card) return;
-    const height = card.offsetHeight;
-    if (Math.abs(height - lastReportedHeight) < 2) return;
-    lastReportedHeight = height;
-    rpcNotify("ui/notifications/size-changed", { height });
-  }, 50);
-}
-
-        const height = Math.ceil(card.getBoundingClientRect().height + verticalPadding);
-        if (height === lastReportedHeight) return;
+    function reportSize() {
+      clearTimeout(sizeReportTimer);
+      sizeReportTimer = setTimeout(() => {
+        const card = $("card");
+        if (!card) return;
+        const height = card.offsetHeight;
+        if (Math.abs(height - lastReportedHeight) < 2) return;
         lastReportedHeight = height;
         rpcNotify("ui/notifications/size-changed", { height });
-      });
+      }, 50);
     }
 
     function render(next = {}) {
@@ -153,8 +146,7 @@ function reportSize() {
         $(`${key}-meter`).setAttribute("aria-valuenow", String(value));
       }
       $("card").style.setProperty("--beat-speed", `${Math.max(.48,60 / clamp(state.pulse,45,150)).toFixed(2)}s`);
-      $("records").innerHTML = state.records.map((item) => `<div class="record"></div>`).join("");
-      [...$("records").children].forEach((node,index) => { node.textContent = state.records[index]; });
+      $("records").innerHTML = state.records.map((item) => `<div class="record">${escapeHtml(item)}</div>`).join("");
       updateClock();
       reportSize();
     }
@@ -196,6 +188,8 @@ function reportSize() {
     }
 
     document.querySelectorAll(".action").forEach((button) => button.addEventListener("click", () => reaction(button.dataset.action)));
+    document.querySelector("details")?.addEventListener("toggle", reportSize);
+
     window.addEventListener("message", (event) => {
       if (event.source !== window.parent) return;
       const message = event.data;
@@ -206,10 +200,13 @@ function reportSize() {
       }
       if (message.method === "ui/notifications/tool-result") render(message.params?.structuredContent || {});
     });
+
     window.addEventListener("openai:set_globals", (event) => render(event.detail?.globals?.toolOutput || {}));
+    
     render();
     updateClock();
     setInterval(updateClock,1000);
+
     const bridgeReady = rpcRequest("ui/initialize", {
       appInfo:{ name:"aevren-heartbar", version:"2.0.0" },
       appCapabilities:{},
