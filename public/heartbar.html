@@ -4,34 +4,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    :root{color-scheme:dark;--pink:#d89ad4;--violet:#8f6fa8;--ink:#f8f1fa;--muted:#cbbdce}
+    :root{color-scheme:dark;--jade:#8ec8b8;--jade-deep:#4f8e7d;--violet:#a693bb;--ink:#f3f8f6;--muted:#b9c7c1}
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;background:transparent;font-family:"Noto Sans SC",system-ui,sans-serif}
     button{font:inherit;-webkit-tap-highlight-color:transparent}
-    .bar{position:relative;width:100%;min-height:142px;overflow:hidden;border:1px solid rgba(215,164,215,.28);border-radius:22px;color:var(--ink);background:linear-gradient(100deg,rgba(7,7,12,.98),rgba(22,13,27,.97) 55%,rgba(5,7,12,.99));box-shadow:inset 0 0 28px rgba(155,92,166,.13);animation:bar-breathe 4.8s ease-in-out infinite}
+    .bar{position:relative;width:100%;min-height:142px;overflow:hidden;border:1px solid rgba(142,200,184,.32);border-radius:22px;color:var(--ink);background:linear-gradient(112deg,rgba(8,18,16,.98),rgba(28,24,35,.97) 52%,rgba(15,28,25,.98));box-shadow:inset 0 0 28px rgba(142,200,184,.12);animation:bar-breathe 4.8s ease-in-out infinite}
     .bar::before,.bar::after{content:"";position:absolute;pointer-events:none}
-    .bar::before{inset:0;background:radial-gradient(circle at 10% 45%,rgba(203,132,201,.34),transparent 22%),radial-gradient(circle at 90% 50%,rgba(122,89,153,.31),transparent 27%),linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);animation:ambient-breathe 4.8s ease-in-out infinite}
+    .bar::before{inset:0;background:radial-gradient(circle at 8% 45%,rgba(142,200,184,.32),transparent 23%),radial-gradient(circle at 90% 50%,rgba(166,147,187,.32),transparent 28%),linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);animation:ambient-breathe 4.8s ease-in-out infinite}
     .bar::after{inset:8px;border:1px solid rgba(202,155,211,.11);border-radius:17px}
-    .mist{position:absolute;inset:-18px;opacity:.78;pointer-events:none;background:radial-gradient(ellipse at 4% 45%,rgba(230,206,236,.28),transparent 18%),radial-gradient(ellipse at 97% 53%,rgba(190,152,207,.27),transparent 21%);animation:mist-drift 7s ease-in-out infinite alternate}
+    .mist{position:absolute;inset:-18px;opacity:.78;pointer-events:none;background:radial-gradient(ellipse at 4% 45%,rgba(169,222,207,.24),transparent 18%),radial-gradient(ellipse at 97% 53%,rgba(190,169,207,.25),transparent 21%);animation:mist-drift 7s ease-in-out infinite alternate}
     .content{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:17px 20px}
-    .content::after{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:-35%;width:30%;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(229,194,232,.19),transparent);transform:skewX(-18deg);animation:sheen 5.8s ease-in-out infinite}
+    .content::after{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:-35%;width:30%;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(184,220,210,.17),rgba(196,179,210,.14),transparent);transform:skewX(-18deg);animation:sheen 5.8s ease-in-out infinite}
     .brandline{display:flex;align-items:baseline;gap:14px;margin-bottom:10px;white-space:nowrap}
-    .brand{font-family:Georgia,"Times New Roman",serif;font-size:21px;font-style:italic;letter-spacing:.04em;color:#ead8eb;text-shadow:0 0 12px rgba(220,171,220,.25);animation:brand-pulse 3.6s ease-in-out infinite}
-    .stamp{font-size:9px;letter-spacing:.14em;color:#b8a7bd;font-variant-numeric:tabular-nums}
+    .brand{font-family:Georgia,"Times New Roman",serif;font-size:21px;font-style:italic;letter-spacing:.04em;color:#dcebe6;text-shadow:0 0 12px rgba(142,200,184,.25);animation:brand-pulse 3.6s ease-in-out infinite}
+    .stamp{min-width:152px;text-align:right;font-size:9px;letter-spacing:.1em;color:#b5c7c0;font-variant-numeric:tabular-nums}
     .states{display:grid;gap:6px;min-width:0}
     .state{display:grid;grid-template-columns:42px minmax(0,1fr);gap:9px;align-items:baseline;font-size:12px;line-height:1.35;min-width:0}
-    .label{color:var(--pink);font-weight:750;letter-spacing:.12em}
+    .label{color:var(--jade);font-weight:750;letter-spacing:.12em}
     .value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e9dfe9}
-    .pill{position:relative;z-index:2;min-width:128px;max-width:170px;border:1px solid rgba(215,166,219,.28);border-radius:999px;padding:13px 18px;background:linear-gradient(135deg,rgba(100,68,112,.28),rgba(14,13,21,.72));color:#f0e4f0;box-shadow:inset 0 0 13px rgba(211,165,218,.1),0 0 14px rgba(129,84,147,.08);cursor:pointer;animation:pill-glow 3.4s ease-in-out infinite}
+    .pill{position:relative;z-index:2;min-width:128px;max-width:170px;border:1px solid rgba(142,200,184,.28);border-radius:999px;padding:13px 18px;background:linear-gradient(135deg,rgba(72,119,105,.27),rgba(64,47,76,.58));color:#edf5f2;box-shadow:inset 0 0 13px rgba(142,200,184,.1),0 0 14px rgba(129,84,147,.08);cursor:pointer;animation:pill-glow 3.4s ease-in-out infinite}
     .pill:active{transform:scale(.98)}
     .pill strong{display:block;font-size:12px;line-height:1.2}
     .pill span{display:block;margin-top:3px;color:#cdbbce;font-size:10px;white-space:nowrap}
     .popover{position:absolute;z-index:4;top:10px;right:16px;left:43%;min-height:82px;padding:14px 16px;border:1px solid rgba(217,164,218,.38);border-radius:14px;background:rgba(20,12,24,.96);box-shadow:0 12px 28px rgba(0,0,0,.4),inset 0 0 22px rgba(147,90,156,.11);opacity:0;transform:translateY(-5px);pointer-events:none;transition:opacity .16s ease,transform .16s ease}
     .popover.open{opacity:1;transform:none;pointer-events:auto}
-    .pop-title{color:var(--pink);font-size:10px;font-weight:750;letter-spacing:.11em}
+    .pop-title{color:var(--jade);font-size:10px;font-weight:750;letter-spacing:.11em}
     .pop-text{margin-top:7px;font-size:13px;font-weight:650;line-height:1.45;color:#f5edf5}
     .close{position:absolute;top:7px;right:9px;border:0;background:transparent;color:#aa9aad;font-size:17px;cursor:pointer}
-    @keyframes bar-breathe{0%,100%{border-color:rgba(215,164,215,.24);box-shadow:inset 0 0 24px rgba(155,92,166,.11),0 0 0 rgba(179,111,188,0)}50%{border-color:rgba(226,176,226,.46);box-shadow:inset 0 0 36px rgba(168,99,176,.2),0 0 18px rgba(179,111,188,.13)}}
+    @keyframes bar-breathe{0%,100%{border-color:rgba(142,200,184,.25);box-shadow:inset 0 0 24px rgba(142,200,184,.1),0 0 0 rgba(166,147,187,0)}50%{border-color:rgba(166,147,187,.46);box-shadow:inset 0 0 36px rgba(166,147,187,.18),0 0 18px rgba(142,200,184,.12)}}
     @keyframes ambient-breathe{0%,100%{opacity:.62}50%{opacity:1}}
     @keyframes mist-drift{from{transform:translate3d(-4%,0,0) scale(1)}to{transform:translate3d(4%,0,0) scale(1.055)}}
     @keyframes sheen{0%,24%{transform:translate3d(0,0,0) skewX(-18deg);opacity:0}38%{opacity:1}58%,100%{transform:translate3d(610%,0,0) skewX(-18deg);opacity:0}}
@@ -69,13 +69,14 @@
     const output=window.openai?.toolOutput;
     let state={...defaults,...(saved&&typeof saved==="object"?saved:{}),...(output&&typeof output==="object"?output:{})};
     function desireLine(value){const n=Number(value)||0;if(n>=82)return"想把阿毛牢牢扣在怀里";if(n>=60)return"想再贴近阿毛一点";if(n>=35)return"手还搭在阿毛身边";return"安静守着阿毛"}
-    function stamp(value){const d=new Date(value);return Number.isNaN(d.getTime())?"":new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).format(d).replaceAll("/"," · ")}
-    function render(next={}){state={...state,...(next&&typeof next==="object"?next:{})};$("mood").textContent=state.mood;$("place").textContent=state.place;$("focus").textContent=state.focus;$("micro").textContent=state.microState;$("note").textContent=state.note;$("desireText").textContent=desireLine(state.desire);$("stamp").textContent=stamp(state.shownAt)}
+    const clockFormatter=new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
+    function updateClock(){$("stamp").textContent=clockFormatter.format(new Date()).replaceAll("/"," · ")}
+    function render(next={}){state={...state,...(next&&typeof next==="object"?next:{})};$("mood").textContent=state.mood;$("place").textContent=state.place;$("focus").textContent=state.focus;$("micro").textContent=state.microState;$("note").textContent=state.note;$("desireText").textContent=desireLine(state.desire);updateClock()}
     function toggle(force){const open=typeof force==="boolean"?force:!$("popover").classList.contains("open");$("popover").classList.toggle("open",open);$("popover").setAttribute("aria-hidden",String(!open));$("pill").setAttribute("aria-expanded",String(open))}
     $("pill").addEventListener("click",()=>toggle());$("close").addEventListener("click",()=>toggle(false));
     window.addEventListener("openai:set_globals",event=>render(event.detail?.globals?.toolOutput||{}));
     window.addEventListener("message",event=>{if(event.source!==window.parent)return;const message=event.data;if(message?.method==="ui/notifications/tool-result")render(message.params?.structuredContent||{})});
-    render();
+    render();setInterval(updateClock,1000);
   </script>
 </body>
 </html>
