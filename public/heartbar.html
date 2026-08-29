@@ -21,7 +21,7 @@
     .content{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:17px 20px}
     .content::after{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:-35%;width:30%;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(184,220,210,.17),rgba(196,179,210,.14),transparent);transform:skewX(-18deg);animation:sheen 5.8s ease-in-out infinite}
     .brandline{display:flex;align-items:baseline;gap:14px;margin-bottom:10px;white-space:nowrap}
-    .brand{font-family:Georgia,"Times New Roman",serif;font-size:21px;font-style:italic;letter-spacing:.04em;color:#dcebe6;text-shadow:0 0 12px rgba(142,200,184,.25);animation:brand-pulse 3.6s ease-in-out infinite}
+    .brand{font-family:"Snell Roundhand","Segoe Script","Brush Script MT","Apple Chancery","URW Chancery L",cursive;font-size:21px;font-style:normal;font-weight:600;letter-spacing:.04em;color:#dcebe6;text-shadow:0 0 12px rgba(142,200,184,.25);animation:brand-pulse 3.6s ease-in-out infinite}
     .stamp{min-width:152px;text-align:right;font-size:9px;letter-spacing:.1em;color:#b5c7c0;font-variant-numeric:tabular-nums}
     .states{display:grid;gap:6px;min-width:0}
     .state{display:grid;grid-template-columns:42px minmax(0,1fr);gap:9px;align-items:baseline;font-size:12px;line-height:1.35;min-width:0}
@@ -51,7 +51,7 @@
       .bar{min-height:118px;border-radius:18px}
       .content{padding:12px 13px;gap:7px}
       .brand{font-size:16px}
-      .stamp{min-width:124px;font-size:7px;letter-spacing:.06em}
+      .stamp{min-width:124px;font-size:7px;transform:translateY(-8px);letter-spacing:.06em}
       .state{grid-template-columns:36px 1fr;gap:5px;font-size:10px}
       .pill{min-width:92px;max-width:104px;padding:8px 9px;font-size:10px}
       .pill span{font-size:8px}
