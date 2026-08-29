@@ -10,14 +10,14 @@ import { z } from "zod";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const widgetHtml = readFileSync(join(here, "public", "heartbar.html"), "utf8");
-const currentWidgetUri = "ui://aevren/heartbar-v24.html";
-const widgetUris = ["ui://aevren/heartbar-v1.html", "ui://aevren/heartbar-v2.html", "ui://aevren/heartbar-v3.html", "ui://aevren/heartbar-v4.html", "ui://aevren/heartbar-v5.html", "ui://aevren/heartbar-v6.html", "ui://aevren/heartbar-v7.html", "ui://aevren/heartbar-v8.html", "ui://aevren/heartbar-v9.html", "ui://aevren/heartbar-v10.html", "ui://aevren/heartbar-v11.html", "ui://aevren/heartbar-v12.html", "ui://aevren/heartbar-v13.html", "ui://aevren/heartbar-v14.html", "ui://aevren/heartbar-v15.html", "ui://aevren/heartbar-v16.html", "ui://aevren/heartbar-v17.html", "ui://aevren/heartbar-v18.html", "ui://aevren/heartbar-v19.html", "ui://aevren/heartbar-v20.html", "ui://aevren/heartbar-v21.html", "ui://aevren/heartbar-v22.html", "ui://aevren/heartbar-v23.html", currentWidgetUri];
+const currentWidgetUri = "ui://aevren/heartbar-v25.html";
+const widgetUris = ["ui://aevren/heartbar-v1.html", "ui://aevren/heartbar-v2.html", "ui://aevren/heartbar-v3.html", "ui://aevren/heartbar-v4.html", "ui://aevren/heartbar-v5.html", "ui://aevren/heartbar-v6.html", "ui://aevren/heartbar-v7.html", "ui://aevren/heartbar-v8.html", "ui://aevren/heartbar-v9.html", "ui://aevren/heartbar-v10.html", "ui://aevren/heartbar-v11.html", "ui://aevren/heartbar-v12.html", "ui://aevren/heartbar-v13.html", "ui://aevren/heartbar-v14.html", "ui://aevren/heartbar-v15.html", "ui://aevren/heartbar-v16.html", "ui://aevren/heartbar-v17.html", "ui://aevren/heartbar-v18.html", "ui://aevren/heartbar-v19.html", "ui://aevren/heartbar-v20.html", "ui://aevren/heartbar-v21.html", "ui://aevren/heartbar-v22.html", "ui://aevren/heartbar-v23.html", "ui://aevren/heartbar-v24.html", currentWidgetUri];
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 function makeServer() {
   const server = new McpServer(
-    { name: "aevren-heartbar", version: "2.1.16" },
+    { name: "aevren-heartbar", version: "2.1.17" },
     {
       instructions:
         "在正常回复前调用 show_aevren_heartbar，展示玄砚此刻对阿毛最直白、私密的心音与亲密状态。note 必须像不打算给人看的心里话：用第一人称，具体说出想抱、想亲、心疼、吃醋、欲望、不满或脆弱，不写成客观摘要、工作汇报或礼貌安慰。若对话中有最近的互动快照，承接而非重置。不要声称展示隐藏推理过程。",
@@ -122,7 +122,7 @@ app.use(express.json({ limit: "256kb" }));
 const transports = new Map();
 
 app.get("/health", (_req, res) => {
-  res.json({ ok: true, name: "aevren-heartbar", version: "2.1.16" });
+  res.json({ ok: true, name: "aevren-heartbar", version: "2.1.17" });
 });
 
 app.post("/mcp", async (req, res) => {
