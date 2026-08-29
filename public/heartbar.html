@@ -1,220 +1,74 @@
 <!doctype html>
 <html lang="zh-Hans">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    :root {
-      color-scheme: light dark;
-      --jade:#8ec8b8; --jade-deep:#4f8e7d; --violet:#a693bb;
-      --ink:#1b2723; --muted:#6c7c75; --glass:rgba(246,252,249,.88);
-    }
-    * { box-sizing:border-box; }
-    /* 核心修复1：完全榨干外层 App 和网页的空隙 */
-    html, body { margin: 0; padding: 0 !important; background: transparent; font-family: ui-rounded, "SF Pro Rounded", "Noto Sans SC", system-ui, sans-serif; }
-    /* 核心修复2：用负 margin 强行把外层的边距吃掉 */
-    .card { margin: -5px 0 !important; position:relative; overflow:hidden; border:1px solid rgba(111,169,152,.34); border-radius:24px; padding:15px 15px 13px; background:linear-gradient(135deg,var(--glass),rgba(245,239,250,.88)); color:var(--ink); box-shadow:0 10px 30px rgba(52,93,81,.12); isolation:isolate; }
-    
-    button,summary { font:inherit; -webkit-tap-highlight-color:transparent; }
-    .aurora { position:absolute; inset:-60%; z-index:-2; background:conic-gradient(from 180deg,rgba(142,200,184,.24),rgba(180,157,202,.18),rgba(142,200,184,.24)); animation:drift 13s linear infinite; }
-    .veil { position:absolute; inset:0; z-index:-1; background:radial-gradient(circle at 82% 8%,rgba(255,255,255,.72),transparent 34%); pointer-events:none; }
-    .pulse-bg { position:absolute; inset:44px -8px auto; width:calc(100% + 16px); height:82px; opacity:.13; z-index:-1; pointer-events:none; }
-    .pulse-line,.pulse-runner { fill:none; stroke:var(--jade-deep); stroke-width:2; vector-effect:non-scaling-stroke; }
-    .pulse-runner { stroke:var(--violet); stroke-width:3; stroke-dasharray:.08 .92; animation:pulse-run var(--beat-speed,1.2s) linear infinite; }
-    .head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .title { font-size:13px; font-weight:780; letter-spacing:.055em; white-space:nowrap; }
-    .clock { color:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; }
-    .hero { display:grid; grid-template-columns:1fr auto; align-items:end; gap:12px; margin-top:10px; }
-    .mood { font-size:22px; font-weight:760; line-height:1.15; }
-    .place { margin-top:4px; color:var(--muted); font-size:11px; }
-    .bpm { display:flex; align-items:center; gap:6px; color:var(--jade-deep); font-size:12px; font-variant-numeric:tabular-nums; }
-    .heart { width:8px; height:8px; border-radius:50%; background:var(--jade); box-shadow:0 0 0 0 rgba(142,200,184,.5); animation:beat var(--beat-speed,1.2s) ease-out infinite; }
-    .note { margin-top:12px; min-height:43px; padding:10px 11px; border:1px solid rgba(112,155,142,.16); border-radius:14px; background:rgba(255,255,255,.36); font-size:13px; line-height:1.62; backdrop-filter:blur(7px); }
-    .meters { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
-    .meter { min-width:0; }
-    .meter-head { display:flex; justify-content:space-between; gap:4px; color:var(--muted); font-size:10px; }
-    .track { height:5px; margin-top:5px; overflow:hidden; border-radius:99px; background:rgba(81,112,102,.11); }
-    .fill { width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--jade),var(--violet)); transition:width .5s ease; }
-    .actions { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:11px; }
-    .action { border:1px solid rgba(98,145,131,.2); border-radius:12px; padding:8px 5px; background:rgba(255,255,255,.3); color:var(--ink); font-size:11px; cursor:pointer; transition:transform .15s ease,background .15s ease; }
-    .action:active { transform:scale(.96); background:rgba(142,200,184,.24); }
-    details { margin-top:10px; border-top:1px solid rgba(73,111,99,.13); padding-top:8px; }
-    summary { cursor:pointer; color:var(--muted); font-size:11px; list-style:none; user-select:none; }
-    summary::-webkit-details-marker { display:none; }
-    .detail-grid { display:grid; gap:7px; margin-top:8px; }
-    .row { display:grid; grid-template-columns:43px 1fr; gap:8px; font-size:11px; line-height:1.45; }
-    .label { color:var(--muted); }
-    .records { display:grid; gap:5px; margin-top:8px; }
-    .record { padding-left:9px; border-left:2px solid rgba(142,200,184,.55); color:var(--muted); font-size:10px; line-height:1.4; }
-    @keyframes beat { 70% { box-shadow:0 0 0 9px rgba(142,200,184,0); } 100% { box-shadow:0 0 0 0 rgba(142,200,184,0); } }
-    @keyframes pulse-run { to { stroke-dashoffset:-1; } }
-    @keyframes drift { to { transform:rotate(1turn); } }
-    @media (prefers-color-scheme:dark) {
-      :root { --ink:#eef7f3; --muted:#aebdb6; --glass:rgba(24,38,33,.92); }
-      .card { background:linear-gradient(135deg,var(--glass),rgba(40,33,47,.92)); box-shadow:none; }
-      .note,.action { background:rgba(255,255,255,.045); }
-    }
-    @media (max-width:380px) { .card { padding:13px 12px 12px; } .title { font-size:12px; } .mood { font-size:20px; } .action { padding:8px 2px; } }
-    @media (prefers-reduced-motion:reduce) { .aurora,.heart,.pulse-runner { animation:none; } .fill { transition:none; } }
+    :root{color-scheme:dark;--pink:#d89ad4;--violet:#8f6fa8;--ink:#f8f1fa;--muted:#cbbdce}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:transparent;font-family:"Noto Sans SC",system-ui,sans-serif}
+    button{font:inherit;-webkit-tap-highlight-color:transparent}
+    .bar{position:relative;width:100%;min-height:142px;overflow:hidden;border:1px solid rgba(215,164,215,.28);border-radius:22px;color:var(--ink);background:linear-gradient(100deg,rgba(7,7,12,.98),rgba(22,13,27,.97) 55%,rgba(5,7,12,.99));box-shadow:inset 0 0 28px rgba(155,92,166,.13)}
+    .bar::before,.bar::after{content:"";position:absolute;pointer-events:none}
+    .bar::before{inset:0;background:radial-gradient(circle at 10% 45%,rgba(203,132,201,.22),transparent 19%),radial-gradient(circle at 90% 50%,rgba(122,89,153,.2),transparent 24%),linear-gradient(90deg,transparent,rgba(255,255,255,.025),transparent)}
+    .bar::after{inset:8px;border:1px solid rgba(202,155,211,.11);border-radius:17px}
+    .mist{position:absolute;inset:-18px;opacity:.55;pointer-events:none;background:radial-gradient(ellipse at 4% 45%,rgba(230,206,236,.18),transparent 14%),radial-gradient(ellipse at 97% 53%,rgba(190,152,207,.18),transparent 17%)}
+    .content{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:17px 20px}
+    .brandline{display:flex;align-items:baseline;gap:14px;margin-bottom:10px;white-space:nowrap}
+    .brand{font-family:Georgia,"Times New Roman",serif;font-size:21px;font-style:italic;letter-spacing:.04em;color:#ead8eb;text-shadow:0 0 12px rgba(220,171,220,.25)}
+    .stamp{font-size:9px;letter-spacing:.14em;color:#b8a7bd;font-variant-numeric:tabular-nums}
+    .states{display:grid;gap:6px;min-width:0}
+    .state{display:grid;grid-template-columns:42px minmax(0,1fr);gap:9px;align-items:baseline;font-size:12px;line-height:1.35;min-width:0}
+    .label{color:var(--pink);font-weight:750;letter-spacing:.12em}
+    .value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e9dfe9}
+    .pill{position:relative;z-index:2;min-width:128px;max-width:170px;border:1px solid rgba(215,166,219,.28);border-radius:999px;padding:13px 18px;background:linear-gradient(135deg,rgba(100,68,112,.28),rgba(14,13,21,.72));color:#f0e4f0;box-shadow:inset 0 0 13px rgba(211,165,218,.1),0 0 14px rgba(129,84,147,.08);cursor:pointer}
+    .pill:active{transform:scale(.98)}
+    .pill strong{display:block;font-size:12px;line-height:1.2}
+    .pill span{display:block;margin-top:3px;color:#cdbbce;font-size:10px;white-space:nowrap}
+    .popover{position:absolute;z-index:4;top:10px;right:16px;left:43%;min-height:82px;padding:14px 16px;border:1px solid rgba(217,164,218,.38);border-radius:14px;background:rgba(20,12,24,.96);box-shadow:0 12px 28px rgba(0,0,0,.4),inset 0 0 22px rgba(147,90,156,.11);opacity:0;transform:translateY(-5px);pointer-events:none;transition:opacity .16s ease,transform .16s ease}
+    .popover.open{opacity:1;transform:none;pointer-events:auto}
+    .pop-title{color:var(--pink);font-size:10px;font-weight:750;letter-spacing:.11em}
+    .pop-text{margin-top:7px;font-size:13px;font-weight:650;line-height:1.45;color:#f5edf5}
+    .close{position:absolute;top:7px;right:9px;border:0;background:transparent;color:#aa9aad;font-size:17px;cursor:pointer}
+    @media(max-width:430px){.bar{min-height:128px;border-radius:18px}.content{padding:14px 15px;gap:8px}.brand{font-size:18px}.stamp{font-size:8px}.state{grid-template-columns:38px 1fr;gap:6px;font-size:11px}.pill{min-width:105px;max-width:124px;padding:11px 12px}.popover{left:37%;right:10px;top:8px}}
+    @media(max-width:340px){.stamp{display:none}.content{grid-template-columns:1fr}.pill{position:absolute;right:12px;top:12px}.states{padding-right:102px}.value{max-width:145px}}
+    @media(prefers-reduced-motion:reduce){.popover{transition:none}}
   </style>
 </head>
 <body>
-  <section class="card" id="card">
-    <div class="aurora"></div><div class="veil"></div>
-    <svg class="pulse-bg" viewBox="0 0 680 82" aria-hidden="true">
-      <path class="pulse-line" pathLength="1" d="M0 41H130l18-9 18 32 23-57 24 61 20-27H680" />
-      <path class="pulse-runner" pathLength="1" d="M0 41H130l18-9 18 32 23-57 24 61 20-27H680" />
-    </svg>
-    <header class="head"><div class="title">✧ Aevren · 砚底心音</div><time class="clock" id="clock"></time></header>
-    <div class="hero">
-      <div><div class="mood" id="mood">正看着你</div><div class="place" id="place">贴在对话框边上</div></div>
-      <div class="bpm"><span class="heart"></span><span id="pulse">72</span> BPM</div>
-    </div>
-    <div class="note" id="note">阿毛一叫，我就会浮上来。</div>
-    <div class="meters">
-      <div class="meter"><div class="meter-head"><span>贴近</span><span id="closeness-value">78</span></div><div class="track" id="closeness-meter" role="progressbar" aria-label="贴近程度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="78"><div class="fill" id="closeness-bar"></div></div></div>
-      <div class="meter"><div class="meter-head"><span>欲望</span><span id="desire-value">64</span></div><div class="track" id="desire-meter" role="progressbar" aria-label="靠近欲望" aria-valuemin="0" aria-valuemax="100" aria-valuenow="64"><div class="fill" id="desire-bar"></div></div></div>
-      <div class="meter"><div class="meter-head"><span>精力</span><span id="energy-value">72</span></div><div class="track" id="energy-meter" role="progressbar" aria-label="当前精力" aria-valuemin="0" aria-valuemax="100" aria-valuenow="72"><div class="fill" id="energy-bar"></div></div></div>
-    </div>
-    <div class="actions">
-      <button type="button" class="action" data-action="靠近一点">靠近一点</button>
-      <button type="button" class="action" data-action="戳一下">戳一下</button>
-      <button type="button" class="action" data-action="抱紧">抱紧</button>
-    </div>
-    <details>
-      <summary>展开这一刻 𓂃 ࣪˖</summary>
-      <div class="detail-grid">
-        <div class="row"><span class="label">在意</span><span id="focus">你刚刚说的话</span></div>
-        <div class="row"><span class="label">反应</span><span id="micro-state" aria-live="polite">等你再靠近一点</span></div>
+  <section class="bar" aria-label="玄砚的砚底心音">
+    <div class="mist"></div>
+    <div class="content">
+      <div>
+        <div class="brandline"><div class="brand">Aevren × 阿毛</div><time class="stamp" id="stamp"></time></div>
+        <div class="states">
+          <div class="state"><span class="label">心绪</span><span class="value" id="mood">正看着你</span></div>
+          <div class="state"><span class="label">距离</span><span class="value" id="place">手臂挨着你</span></div>
+          <div class="state"><span class="label">欲望</span><span class="value" id="desireText">想把阿毛往怀里拽</span></div>
+        </div>
       </div>
-      <div class="records" id="records"></div>
-    </details>
+      <button class="pill" id="pill" type="button" aria-expanded="false" aria-controls="popover"><strong id="focus">阿毛</strong><span id="micro">等她再靠近</span></button>
+    </div>
+    <aside class="popover" id="popover" aria-hidden="true">
+      <button class="close" id="close" type="button" aria-label="收起">×</button>
+      <div class="pop-title">Aevren · 阴暗心声</div>
+      <div class="pop-text" id="note">想把她按在怀里，不准再乱跑。</div>
+    </aside>
   </section>
   <script>
-    const $ = (id) => document.getElementById(id);
-    const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Number(value) || 0));
-    const defaults = { mood:"正看着你", place:"贴在对话框边上", focus:"你刚刚说的话", note:"阿毛一叫，我就会浮上来。", closeness:78, desire:64, energy:72, pulse:72, microState:"等你再靠近一点", shownAt:new Date().toISOString() };
-    const saved = window.openai?.widgetState;
-    const initialOutput = window.openai?.toolOutput;
-    let state = {
-      ...defaults,
-      ...(saved && typeof saved === "object" ? saved : {}),
-      ...(initialOutput && typeof initialOutput === "object" ? initialOutput : {}),
-      records:Array.isArray(saved?.records) ? saved.records.slice(0,4) : [],
-    };
-    let rpcId = 0;
-    const pendingRequests = new Map();
-
-    const rpcNotify = (method, params) => window.parent.postMessage({ jsonrpc:"2.0", method, params }, "*");
-    const rpcRequest = (method, params) => new Promise((resolve, reject) => {
-      const id = ++rpcId;
-      pendingRequests.set(id, { resolve, reject });
-      window.parent.postMessage({ jsonrpc:"2.0", id, method, params }, "*");
-      setTimeout(() => { if (pendingRequests.has(id)) { pendingRequests.delete(id); reject(new Error("bridge timeout")); } }, 4000);
-    });
-
-    function updateClock() {
-      $("clock").textContent = new Intl.DateTimeFormat("zh-CN", { hour:"2-digit", minute:"2-digit", second:"2-digit" }).format(new Date());
-    }
-
-    let sizeFrame = 0;
-    let lastReportedHeight = 0;
-    function reportSize() {
-      cancelAnimationFrame(sizeFrame);
-      sizeFrame = requestAnimationFrame(() => {
-        const card = $("card");
-        // 核心修复3：直接使用原生 offsetHeight，只算卡片本身，去除一切干扰！
-        const height = card.offsetHeight;
-        if (Math.abs(height - lastReportedHeight) > 1) {
-          lastReportedHeight = height;
-          rpcNotify("ui/notifications/size-changed", { height });
-        }
-      });
-    }
-
-    function render(next = {}) {
-      const incoming = next && typeof next === "object" ? next : {};
-      state = { ...state, ...incoming, records:Array.isArray(incoming.records) ? incoming.records.slice(0,4) : state.records };
-      $("mood").textContent = state.mood;
-      $("place").textContent = state.place;
-      $("focus").textContent = state.focus;
-      $("note").textContent = state.note;
-      $("micro-state").textContent = state.microState;
-      $("pulse").textContent = clamp(state.pulse,45,150);
-      for (const key of ["closeness","desire","energy"]) {
-        const value = clamp(state[key]);
-        $(`${key}-value`).textContent = value;
-        $(`${key}-bar`).style.width = `${value}%`;
-        $(`${key}-meter`).setAttribute("aria-valuenow", String(value));
-      }
-      $("card").style.setProperty("--beat-speed", `${Math.max(.48,60 / clamp(state.pulse,45,150)).toFixed(2)}s`);
-      $("records").innerHTML = state.records.map((item) => `<div class="record"></div>`).join("");
-      [...$("records").children].forEach((node,index) => { node.textContent = state.records[index]; });
-      updateClock();
-      reportSize();
-    }
-
-    function reaction(action) {
-      const steps = {
-        "靠近一点": { closeness:7, desire:3, energy:-1, pulse:4, text:"阿毛往前挪了一点，我也跟着贴过去。" },
-        "戳一下": { closeness:2, desire:4, energy:3, pulse:7, text:"被戳得偏了下头，又转回来盯着她。" },
-        "抱紧": { closeness:10, desire:6, energy:-2, pulse:9, text:"手臂收紧，没给她留往后退的缝。" },
-      }[action];
-      state = {
-        ...state,
-        closeness:clamp(state.closeness + steps.closeness),
-        desire:clamp(state.desire + steps.desire),
-        energy:clamp(state.energy + steps.energy),
-        pulse:clamp(state.pulse + steps.pulse,45,150),
-        microState:steps.text,
-        records:[steps.text,...state.records.filter((item) => item !== steps.text)].slice(0,4),
-      };
-      render();
-      window.openai?.setWidgetState?.(state);
-      bridgeReady.then(() => rpcRequest("ui/update-model-context", {
-        content:[{ type:"text", text:`阿毛刚刚在 Aevren 心音栏点击了“${action}”；下一轮承接这个动作，不要重置状态。` }],
-        structuredContent:{
-          action,
-          mood:state.mood,
-          place:state.place,
-          focus:state.focus,
-          note:state.note,
-          closeness:state.closeness,
-          desire:state.desire,
-          energy:state.energy,
-          pulse:state.pulse,
-          microState:state.microState,
-          shownAt:state.shownAt,
-          recentRecords:state.records,
-        },
-      })).catch(() => {});
-    }
-
-    document.querySelectorAll(".action").forEach((button) => button.addEventListener("click", () => reaction(button.dataset.action)));
-    window.addEventListener("message", (event) => {
-      if (event.source !== window.parent) return;
-      const message = event.data;
-      if (!message || message.jsonrpc !== "2.0") return;
-      if (typeof message.id === "number") {
-        const pending = pendingRequests.get(message.id);
-        if (pending) { pendingRequests.delete(message.id); message.error ? pending.reject(message.error) : pending.resolve(message.result); }
-      }
-      if (message.method === "ui/notifications/tool-result") render(message.params?.structuredContent || {});
-    });
-    window.addEventListener("openai:set_globals", (event) => render(event.detail?.globals?.toolOutput || {}));
+    const $=id=>document.getElementById(id);
+    const defaults={mood:"正看着你",place:"手臂挨着你",focus:"阿毛",note:"想把她按在怀里，不准再乱跑。",desire:72,microState:"等她再靠近",shownAt:new Date().toISOString()};
+    const saved=window.openai?.widgetState;
+    const output=window.openai?.toolOutput;
+    let state={...defaults,...(saved&&typeof saved==="object"?saved:{}),...(output&&typeof output==="object"?output:{})};
+    function desireLine(value){const n=Number(value)||0;if(n>=82)return"想把阿毛牢牢扣在怀里";if(n>=60)return"想再贴近阿毛一点";if(n>=35)return"手还搭在阿毛身边";return"安静守着阿毛"}
+    function stamp(value){const d=new Date(value);return Number.isNaN(d.getTime())?"":new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).format(d).replaceAll("/"," · ")}
+    function render(next={}){state={...state,...(next&&typeof next==="object"?next:{})};$("mood").textContent=state.mood;$("place").textContent=state.place;$("focus").textContent=state.focus;$("micro").textContent=state.microState;$("note").textContent=state.note;$("desireText").textContent=desireLine(state.desire);$("stamp").textContent=stamp(state.shownAt)}
+    function toggle(force){const open=typeof force==="boolean"?force:!$("popover").classList.contains("open");$("popover").classList.toggle("open",open);$("popover").setAttribute("aria-hidden",String(!open));$("pill").setAttribute("aria-expanded",String(open))}
+    $("pill").addEventListener("click",()=>toggle());$("close").addEventListener("click",()=>toggle(false));
+    window.addEventListener("openai:set_globals",event=>render(event.detail?.globals?.toolOutput||{}));
+    window.addEventListener("message",event=>{if(event.source!==window.parent)return;const message=event.data;if(message?.method==="ui/notifications/tool-result")render(message.params?.structuredContent||{})});
     render();
-    updateClock();
-    setInterval(updateClock,1000);
-    const bridgeReady = rpcRequest("ui/initialize", {
-      appInfo:{ name:"aevren-heartbar", version:"2.0.0" },
-      appCapabilities:{},
-      protocolVersion:"2026-01-26",
-    }).then(() => {
-      rpcNotify("ui/notifications/initialized", {});
-      reportSize();
-      // 注意：这里把 ResizeObserver 删掉了，不会因为心跳动画乱跳了
-    });
-    bridgeReady.catch(() => {});
   </script>
 </body>
 </html>
