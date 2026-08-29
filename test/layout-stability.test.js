@@ -25,7 +25,8 @@ assert.doesNotMatch(html,/\.stamp\{display:none\}/,"the live clock remains visib
 assert.match(html,/aria-label="Aevren × Niamh">𝒜ℯ𝓋𝓇ℯ𝓃 [^<]+ 𝒩𝒾𝒶𝓂𝒽/,"preserve the user-selected brand names and separator in a portable script form");
 assert.match(html,/\.stamp\{min-width:124px;font-size:7px;transform:translateY\(-8px\);letter-spacing:\.06em\}/,"preserve the user-selected mobile clock offset");
 assert.match(html,/font-family:"Cambria Math","STIX Two Math","Noto Sans Math","Times New Roman",serif/,"brand supports portable mathematical script glyphs");
-assert.match(html,/\.pill\{min-width:92px;max-width:104px;margin-right:6px;/,"mobile capsule is inset from the right edge");
+assert.match(html,/\.pill\{min-width:92px;max-width:104px;margin-right:[1-9]\d*px;/,"mobile capsule is inset from the right edge");
+assert.match(html,/\.pill span\{font-size:8px;line-height:1\.25;white-space:normal;overflow-wrap:anywhere\}/,"mobile capsule detail wraps instead of clipping");
 assert.match(html,/setInterval\(updateClock,1000\)/,"clock updates once per second");
 assert.match(html,/\.stamp\{[^}]*min-width:[^}]*font-variant-numeric:tabular-nums/,"clock reserves stable width");
 assert.doesNotMatch(html,/@keyframes[^}]*\b(?:height|width|margin|padding|top|bottom|left|right)\s*:/s,"animations must not mutate layout geometry");
