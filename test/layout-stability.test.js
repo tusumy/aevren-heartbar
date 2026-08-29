@@ -22,9 +22,9 @@ assert.match(html,/@media\(max-width:430px\)[\s\S]*?\.popover\{left:44%;right:8p
 assert.match(html,/\.pop-text\{[^}]*overflow-wrap:anywhere;word-break:break-word/,"mobile detail text wraps long tokens instead of clipping");
 assert.doesNotMatch(html,/\.stamp\{opacity:0\}/,"the live clock remains visible when details open");
 assert.doesNotMatch(html,/\.stamp\{display:none\}/,"the live clock remains visible on narrow phones");
-assert.match(html,/Aevren × Niamh/,"preserve the user-selected brand name");
+assert.match(html,/aria-label="Aevren × Niamh">𝒜ℯ𝓋𝓇ℯ𝓃 × 𝒩𝒾𝒶𝓂𝒽/,"preserve the user-selected brand name in a portable script form");
 assert.match(html,/\.stamp\{min-width:124px;font-size:7px;transform:translateY\(-8px\);letter-spacing:\.06em\}/,"preserve the user-selected mobile clock offset");
-assert.match(html,/font-family:"Snell Roundhand","Segoe Script","Brush Script MT","Apple Chancery","URW Chancery L",cursive/,"brand uses a cursive script font stack");
+assert.match(html,/font-family:"Cambria Math","STIX Two Math","Noto Sans Math","Times New Roman",serif/,"brand supports portable mathematical script glyphs");
 assert.match(html,/setInterval\(updateClock,1000\)/,"clock updates once per second");
 assert.match(html,/\.stamp\{[^}]*min-width:[^}]*font-variant-numeric:tabular-nums/,"clock reserves stable width");
 assert.doesNotMatch(html,/@keyframes[^}]*\b(?:height|width|margin|padding|top|bottom|left|right)\s*:/s,"animations must not mutate layout geometry");
