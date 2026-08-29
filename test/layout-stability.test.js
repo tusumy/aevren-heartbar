@@ -13,6 +13,8 @@ assert.match(html,/@keyframes mist-drift/,"ambient motion is present");
 assert.match(html,/@keyframes sheen/,"the full-width light sweep is present");
 assert.match(html,/class="goo left"/,"liquid crystal edge decoration is present");
 assert.match(html,/class="goo right"/,"liquid crystal decoration frames both edges");
+assert.match(html,/\.popover::before/,"popover has an organic outer membrane");
+assert.match(html,/\.popover::after/,"popover has liquid bubble droplets");
 assert.match(html,/setInterval\(updateClock,1000\)/,"clock updates once per second");
 assert.match(html,/\.stamp\{[^}]*min-width:[^}]*font-variant-numeric:tabular-nums/,"clock reserves stable width");
 assert.doesNotMatch(html,/@keyframes[^}]*\b(?:height|width|margin|padding|top|bottom|left|right)\s*:/s,"animations must not mutate layout geometry");
