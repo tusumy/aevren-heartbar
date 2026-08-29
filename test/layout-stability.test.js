@@ -23,6 +23,8 @@ assert.match(html,/\.pop-text\{[^}]*overflow-wrap:anywhere;word-break:break-word
 assert.doesNotMatch(html,/\.stamp\{opacity:0\}/,"the live clock remains visible when details open");
 assert.doesNotMatch(html,/\.stamp\{display:none\}/,"the live clock remains visible on narrow phones");
 assert.match(html,/Aevren × Niamh/,"preserve the user-selected brand name");
+assert.match(html,/\.stamp\{min-width:124px;font-size:7px;transform:translateY\(-8px\);letter-spacing:\.06em\}/,"preserve the user-selected mobile clock offset");
+assert.match(html,/font-family:"Snell Roundhand","Segoe Script","Brush Script MT","Apple Chancery","URW Chancery L",cursive/,"brand uses a cursive script font stack");
 assert.match(html,/setInterval\(updateClock,1000\)/,"clock updates once per second");
 assert.match(html,/\.stamp\{[^}]*min-width:[^}]*font-variant-numeric:tabular-nums/,"clock reserves stable width");
 assert.doesNotMatch(html,/@keyframes[^}]*\b(?:height|width|margin|padding|top|bottom|left|right)\s*:/s,"animations must not mutate layout geometry");
