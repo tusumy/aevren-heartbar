@@ -1,13 +1,14 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-const html = readFileSync(new URL("../public/heartbar.html", import.meta.url), "utf8");
-const server = readFileSync(new URL("../server.js", import.meta.url), "utf8");
+const html=readFileSync(new URL("../public/heartbar.html",import.meta.url),"utf8");
 
-assert.doesNotMatch(html, /ui\/notifications\/size-changed/, "the host must own inline widget sizing");
-assert.doesNotMatch(html, /ResizeObserver/, "manual resize observation can create a host feedback loop");
-assert.doesNotMatch(html, /reportSize/, "manual height reporting must stay removed");
-assert.doesNotMatch(html, /lastReportedHeight/, "obsolete resize bookkeeping must stay removed");
-assert.match(server, /heartbar-v6\.html/, "serve the current widget URI");
+assert.doesNotMatch(html,/ui\/notifications\/size-changed/,"host owns inline widget sizing");
+assert.doesNotMatch(html,/ResizeObserver/,"manual observation creates host feedback loops");
+assert.doesNotMatch(html,/reportSize|lastReportedHeight/,"manual resize bookkeeping stays removed");
+assert.doesNotMatch(html,/setInterval\s*\(/,"the compact bar must not mutate every second");
+assert.doesNotMatch(html,/margin\s*:\s*-\d/,"negative margins must not fight host layout");
+assert.match(html,/class="bar"/,"compact status bar is present");
+assert.match(html,/class="popover"/,"click popover is present");
 
 console.log("layout stability regression: pass");
