@@ -19,7 +19,7 @@
     .frame-main{fill:none;stroke:url(#frame-gradient);stroke-width:4}
     .frame-inner{fill:none;stroke:url(#frame-highlight);stroke-width:1.25;opacity:.72}
     .leaf-vein{fill:none;stroke:url(#frame-highlight);stroke-linecap:round;stroke-linejoin:round}
-    .content{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:17px 20px 17px 38px}
+    .content{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:17px 20px 17px 44px}
     .content::after{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:-35%;width:30%;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(184,220,210,.17),rgba(196,179,210,.14),transparent);transform:skewX(-18deg);animation:sheen 5.8s ease-in-out infinite}
     .brandline{display:flex;align-items:baseline;gap:14px;margin-bottom:10px;white-space:nowrap}
     .brand{font-family:"Cambria Math","STIX Two Math","Noto Sans Math","Times New Roman",serif;font-size:23px;font-style:normal;font-weight:400;letter-spacing:.01em;color:#dcebe6;text-shadow:0 0 12px rgba(142,200,184,.25);animation:brand-pulse 3.6s ease-in-out infinite}
@@ -50,7 +50,7 @@
     @keyframes pill-glow{0%,100%{box-shadow:inset 0 0 13px rgba(211,165,218,.1),0 0 8px rgba(129,84,147,.05)}50%{box-shadow:inset 0 0 16px rgba(211,165,218,.14),0 0 14px rgba(162,104,174,.13)}}
     @media(max-width:430px){
       .bar{min-height:118px;border-radius:18px}
-      .content{padding:12px 13px 12px 31px;gap:7px}
+      .content{padding:12px 13px 12px 37px;gap:7px}
       .brand{font-size:18px}
       .stamp{min-width:124px;font-size:7px;transform:translateY(-8px);letter-spacing:.06em}
       .state{grid-template-columns:36px 1fr;gap:5px;font-size:10px}
@@ -80,7 +80,7 @@
   <svg class="shape-defs" aria-hidden="true">
     <defs>
       <clipPath id="leaf-card-clip" clipPathUnits="objectBoundingBox">
-        <path d="M.008,.56 L.028,.5 C.06,.2 .22,.04 .5,.045 C.74,.05 .9,.22 .994,.5 C.9,.78 .74,.95 .5,.955 C.22,.96 .06,.8 .028,.54 Z"/>
+        <path d="M.012,.16 C.14,.04 .38,.035 .56,.12 C.73,.19 .86,.38 .995,.56 C.86,.56 .79,.65 .7,.82 C.58,.98 .32,.96 .15,.86 C.055,.8 .015,.58 .012,.16 Z"/>
       </clipPath>
     </defs>
   </svg>
@@ -104,10 +104,11 @@
           <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="B"/>
         </filter>
       </defs>
-      <path class="frame-main" d="M8 146 L28 130 C60 52 220 10 500 12 C740 14 900 57 994 130 C900 203 740 246 500 248 C220 250 60 208 28 140 Z" filter="url(#frame-distort)"/>
-      <path class="frame-inner" d="M30 139 C76 68 234 24 500 24 C730 24 874 63 974 130 C874 197 730 236 500 236 C234 236 76 192 30 139"/>
-      <path class="leaf-vein" d="M15 142 C238 139 536 135 985 130" stroke-width="1.8" opacity=".18"/>
-      <path class="leaf-vein" d="M150 140 C205 113 255 83 300 48 M150 141 C212 166 261 194 305 225 M365 137 C426 105 476 72 520 30 M365 137 C432 168 485 198 532 232 M605 134 C669 103 719 80 767 54 M605 134 C677 163 729 186 780 207 M818 132 C858 107 889 91 919 77 M818 132 C861 153 893 169 924 184" stroke-width="1.35" opacity=".12"/>
+      <path class="frame-main" d="M12 42 C140 10 380 9 560 31 C730 49 860 98 995 146 C860 146 790 169 700 213 C580 255 320 250 150 224 C55 208 15 151 12 42 Z" filter="url(#frame-distort)"/>
+      <path class="frame-inner" d="M27 50 C158 23 382 22 555 43 C714 60 840 104 971 143 C842 149 776 173 690 204 C574 241 326 238 159 214 C72 201 34 151 27 50"/>
+      <path class="leaf-vein" d="M18 126 C248 125 548 136 987 146" stroke-width="1.8" opacity=".2"/>
+      <path class="leaf-vein" d="M20 126 C12 89 23 48 46 9 M27 128 C25 91 35 56 58 24" stroke-width="2.2" opacity=".42"/>
+      <path class="leaf-vein" d="M160 126 C211 100 258 74 302 46 M160 128 C218 157 265 183 309 211 M372 131 C430 103 478 78 523 50 M372 132 C436 163 488 188 534 221 M612 138 C671 112 720 94 766 78 M612 139 C678 164 729 182 776 196 M818 143 C859 126 891 116 920 110 M818 143 C861 158 894 170 925 180" stroke-width="1.3" opacity=".11"/>
     </svg>
     <div class="content">
       <div>
