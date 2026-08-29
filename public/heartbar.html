@@ -31,8 +31,10 @@
     .pill:active{transform:scale(.98)}
     .pill strong{display:block;font-size:12px;line-height:1.2}
     .pill span{display:block;margin-top:3px;color:#cdbbce;font-size:10px;white-space:nowrap}
-    .popover{position:absolute;z-index:4;top:10px;right:16px;left:43%;min-height:82px;padding:14px 16px;border:1px solid rgba(217,164,218,.38);border-radius:14px;background:rgba(20,12,24,.96);box-shadow:0 12px 28px rgba(0,0,0,.4),inset 0 0 22px rgba(147,90,156,.11);opacity:0;transform:translateY(-5px);pointer-events:none;transition:opacity .16s ease,transform .16s ease}
-    .popover.open{opacity:1;transform:none;pointer-events:auto}
+    .popover{position:absolute;z-index:4;top:9px;right:13px;left:44%;min-height:78px;padding:14px 30px 14px 18px;border:1px solid rgba(174,211,200,.42);border-radius:28px 19px 27px 22px/22px 28px 20px 27px;background:linear-gradient(135deg,rgba(27,45,40,.96),rgba(38,28,46,.97) 70%,rgba(18,27,25,.97));box-shadow:0 12px 28px rgba(0,0,0,.42),inset 0 0 24px rgba(142,200,184,.13),0 0 16px rgba(166,147,187,.16);opacity:0;transform:translateY(-5px) scale(.98);transform-origin:82% 50%;pointer-events:none;transition:opacity .16s ease,transform .16s ease}
+    .popover::before{content:"";position:absolute;z-index:-1;inset:-5px -7px -6px -5px;border:1px solid rgba(166,147,187,.2);border-radius:33px 24px 35px 26px/27px 34px 24px 31px;background:radial-gradient(circle at 8% 25%,rgba(219,238,232,.2) 0 4px,transparent 5px),radial-gradient(circle at 97% 72%,rgba(190,171,207,.25) 0 5px,transparent 6px);filter:blur(.2px)}
+    .popover::after{content:"";position:absolute;right:-8px;bottom:8px;width:7px;height:10px;border-radius:55% 45% 58% 42%;background:linear-gradient(145deg,rgba(219,238,232,.52),rgba(142,200,184,.18),rgba(166,147,187,.35));box-shadow:-4px 13px 0 -2px rgba(142,200,184,.3),-17px 18px 0 -2px rgba(166,147,187,.25);animation:bubble-drops 2.8s ease-in-out infinite}
+    .popover.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
     .pop-title{color:var(--jade);font-size:10px;font-weight:750;letter-spacing:.11em}
     .pop-text{margin-top:7px;font-size:13px;font-weight:650;line-height:1.45;color:#f5edf5}
     .close{position:absolute;top:7px;right:9px;border:0;background:transparent;color:#aa9aad;font-size:17px;cursor:pointer}
@@ -41,12 +43,13 @@
     @keyframes mist-drift{from{transform:translate3d(-4%,0,0) scale(1)}to{transform:translate3d(4%,0,0) scale(1.055)}}
     @keyframes goo-float{from{translate:0 -2px}to{translate:0 3px}}
     @keyframes drop-pulse{0%,100%{transform:translateY(-1px) scale(.92);opacity:.58}50%{transform:translateY(3px) scale(1.08);opacity:1}}
+    @keyframes bubble-drops{0%,100%{transform:translateY(-1px);opacity:.65}50%{transform:translateY(3px);opacity:1}}
     @keyframes sheen{0%,24%{transform:translate3d(0,0,0) skewX(-18deg);opacity:0}38%{opacity:1}58%,100%{transform:translate3d(610%,0,0) skewX(-18deg);opacity:0}}
     @keyframes brand-pulse{0%,100%{opacity:.82;text-shadow:0 0 9px rgba(220,171,220,.18)}50%{opacity:1;text-shadow:0 0 17px rgba(220,171,220,.42)}}
     @keyframes pill-glow{0%,100%{box-shadow:inset 0 0 13px rgba(211,165,218,.1),0 0 8px rgba(129,84,147,.05)}50%{box-shadow:inset 0 0 16px rgba(211,165,218,.14),0 0 14px rgba(162,104,174,.13)}}
-    @media(max-width:430px){.bar{min-height:128px;border-radius:18px}.content{padding:14px 15px;gap:8px}.brand{font-size:18px}.stamp{font-size:8px}.state{grid-template-columns:38px 1fr;gap:6px;font-size:11px}.pill{min-width:105px;max-width:124px;padding:11px 12px}.popover{left:37%;right:10px;top:8px}}
+    @media(max-width:430px){.bar{min-height:128px;border-radius:18px}.content{padding:14px 15px;gap:8px}.brand{font-size:18px}.stamp{font-size:8px}.state{grid-template-columns:38px 1fr;gap:6px;font-size:11px}.pill{min-width:105px;max-width:124px;padding:11px 12px}.popover{left:34%;right:9px;top:7px;border-radius:25px 18px 25px 20px/20px 26px 19px 24px}}
     @media(max-width:340px){.stamp{display:none}.content{grid-template-columns:1fr}.pill{position:absolute;right:12px;top:12px}.states{padding-right:102px}.value{max-width:145px}}
-    @media(prefers-reduced-motion:reduce){.bar,.bar::before,.mist,.goo,.drop,.content::after,.brand,.pill{animation:none}.popover{transition:none}}
+    @media(prefers-reduced-motion:reduce){.bar,.bar::before,.mist,.goo,.drop,.popover::after,.content::after,.brand,.pill{animation:none}.popover{transition:none}}
   </style>
 </head>
 <body>
