@@ -18,7 +18,8 @@ assert.match(html,/feTurbulence[^>]+baseFrequency="\.009 \.055"/,"liquid frame h
 assert.match(html,/id="leaf-card-clip" clipPathUnits="objectBoundingBox"/,"leaf silhouette scales with the card");
 assert.match(html,/class="leaf-vein"/,"leaf-shaped card includes restrained botanical veins");
 assert.doesNotMatch(html,/class="(?:dragon|whale)-/,"literal animal decoration is removed");
-assert.match(html,/padding:17px 20px 17px 38px/,"left content clears the short leaf stem");
+assert.match(html,/padding:17px 20px 17px 44px/,"left content clears the short leaf stem");
+assert.match(html,/M\.012,\.16 C\.14,\.04/,"leaf silhouette uses an asymmetric top and weighted lower curve");
 assert.match(html,/setInterval\(spawnBubble,1200\)/,"ambient bubbles appear every 1.2 seconds");
 assert.match(html,/querySelectorAll\("\.bubble"\)\.length>=6/,"ambient bubble count is bounded");
 assert.match(html,/\.popover::before/,"popover has an organic outer membrane");
