@@ -9,7 +9,7 @@
     html,body{margin:0;padding:0;background:transparent;font-family:"Noto Sans SC",system-ui,sans-serif;-webkit-text-size-adjust:100%;text-size-adjust:100%}
     button{font:inherit;-webkit-tap-highlight-color:transparent}
     .shape-defs{position:absolute;width:0;height:0;overflow:hidden}
-    .bar{position:relative;width:100%;min-height:142px;overflow:hidden;border:0;border-radius:0;clip-path:url(#whale-card-clip);color:var(--ink);background:linear-gradient(112deg,rgba(8,18,16,.98),rgba(28,24,35,.97) 52%,rgba(15,28,25,.98));box-shadow:inset 0 0 24px rgba(142,200,184,.1);animation:bar-breathe 4.8s ease-in-out infinite}
+    .bar{position:relative;width:100%;min-height:142px;overflow:hidden;border:0;border-radius:0;clip-path:url(#leaf-card-clip);color:var(--ink);background:linear-gradient(112deg,rgba(8,18,16,.98),rgba(28,24,35,.97) 52%,rgba(15,28,25,.98));box-shadow:inset 0 0 24px rgba(142,200,184,.1);animation:bar-breathe 4.8s ease-in-out infinite}
     .bar::before,.bar::after{content:"";position:absolute;pointer-events:none}
     .bar::before{inset:0;background:radial-gradient(circle at 8% 45%,rgba(142,200,184,.2),transparent 23%),radial-gradient(circle at 90% 50%,rgba(166,147,187,.2),transparent 28%),linear-gradient(90deg,transparent,rgba(255,255,255,.035),transparent);animation:ambient-breathe 4.8s ease-in-out infinite}
     .bar::after{display:none}
@@ -18,8 +18,7 @@
     .liquid-frame{position:absolute;z-index:1;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;opacity:.88;filter:drop-shadow(0 0 5px rgba(116,72,137,.32));animation:frame-pulse 5.4s ease-in-out infinite}
     .frame-main{fill:none;stroke:url(#frame-gradient);stroke-width:4}
     .frame-inner{fill:none;stroke:url(#frame-highlight);stroke-width:1.25;opacity:.72}
-    .whale-detail{fill:none;stroke:url(#frame-highlight);stroke-linecap:round;stroke-linejoin:round}
-    .whale-eye{fill:#8ec8b8;opacity:.7;filter:drop-shadow(0 0 4px rgba(142,200,184,.65))}
+    .leaf-vein{fill:none;stroke:url(#frame-highlight);stroke-linecap:round;stroke-linejoin:round}
     .content{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:17px 20px 17px 38px}
     .content::after{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:-35%;width:30%;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(184,220,210,.17),rgba(196,179,210,.14),transparent);transform:skewX(-18deg);animation:sheen 5.8s ease-in-out infinite}
     .brandline{display:flex;align-items:baseline;gap:14px;margin-bottom:10px;white-space:nowrap}
@@ -80,8 +79,8 @@
 <body>
   <svg class="shape-defs" aria-hidden="true">
     <defs>
-      <clipPath id="whale-card-clip" clipPathUnits="objectBoundingBox">
-        <path d="M.068,.035 C.03,.04 .008,.15 .008,.36 C.008,.66 .03,.93 .078,.95 C.3,.99 .62,.98 .866,.87 C.903,.85 .933,.81 .958,.75 L.997,.93 C.993,.76 .98,.61 .949,.51 C.98,.4 .993,.24 .997,.06 L.958,.25 C.93,.17 .9,.12 .864,.1 C.62,0 .3,.015 .068,.035 Z"/>
+      <clipPath id="leaf-card-clip" clipPathUnits="objectBoundingBox">
+        <path d="M.008,.56 L.028,.5 C.06,.2 .22,.04 .5,.045 C.74,.05 .9,.22 .994,.5 C.9,.78 .74,.95 .5,.955 C.22,.96 .06,.8 .028,.54 Z"/>
       </clipPath>
     </defs>
   </svg>
@@ -105,10 +104,10 @@
           <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="B"/>
         </filter>
       </defs>
-      <path class="frame-main" d="M68 9 C30 10 8 38 8 93 C8 170 30 241 78 247 C300 257 620 255 866 226 C903 222 933 211 958 194 L997 242 C993 197 980 159 949 133 C980 104 993 62 997 16 L958 65 C930 45 900 30 864 25 C620 0 300 4 68 9 Z" filter="url(#frame-distort)"/>
-      <path class="frame-inner" d="M72 20 C39 21 20 48 20 98 C20 166 39 227 82 236 C302 246 616 244 858 216 C899 211 925 201 947 184 M947 76 C925 57 899 45 856 38 C616 14 302 15 72 20"/>
-      <path class="whale-detail" d="M35 137 C67 119 103 119 137 134 M92 233 C122 214 145 210 175 216 C158 231 139 241 117 244 M956 71 C970 88 978 108 982 129 M956 194 C970 176 978 155 982 136" stroke-width="2" opacity=".38"/>
-      <circle class="whale-eye" cx="53" cy="103" r="2.2"/>
+      <path class="frame-main" d="M8 146 L28 130 C60 52 220 10 500 12 C740 14 900 57 994 130 C900 203 740 246 500 248 C220 250 60 208 28 140 Z" filter="url(#frame-distort)"/>
+      <path class="frame-inner" d="M30 139 C76 68 234 24 500 24 C730 24 874 63 974 130 C874 197 730 236 500 236 C234 236 76 192 30 139"/>
+      <path class="leaf-vein" d="M15 142 C238 139 536 135 985 130" stroke-width="1.8" opacity=".18"/>
+      <path class="leaf-vein" d="M150 140 C205 113 255 83 300 48 M150 141 C212 166 261 194 305 225 M365 137 C426 105 476 72 520 30 M365 137 C432 168 485 198 532 232 M605 134 C669 103 719 80 767 54 M605 134 C677 163 729 186 780 207 M818 132 C858 107 889 91 919 77 M818 132 C861 153 893 169 924 184" stroke-width="1.35" opacity=".12"/>
     </svg>
     <div class="content">
       <div>
