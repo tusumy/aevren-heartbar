@@ -1,4 +1,5 @@
 {
+  // Trigger a fresh Workers Build from the cloudflare-worker branch.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "aevren-heartbar",
   "main": "src/index.js",
