@@ -1,0 +1,62 @@
+name: MCP endpoint probe
+
+on:
+  push:
+    branches: [cloudflare-worker]
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Cloudflare deployment
+        run: sleep 45
+
+      - name: Probe health
+        run: |
+          set -x
+          curl -i --fail-with-body --max-time 30 \
+            https://aevren-heartbar-cf-test.kmb1768.workers.dev/health
+
+      - name: Initialize MCP session
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://aevren-heartbar-cf-test.kmb1768.workers.dev/mcp'
+          BODY='{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"github-probe","version":"1.0.0"}}}'
+
+          echo '--- initialize response ---'
+          curl -sS -D /tmp/init.headers -o /tmp/init.body \
+            --max-time 30 \
+            -X POST "$URL" \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            --data "$BODY" || true
+          cat /tmp/init.headers
+          cat /tmp/init.body
+          echo
+
+          STATUS=$(awk 'toupper($1) ~ /^HTTP\// {code=$2} END {print code}' /tmp/init.headers)
+          test "$STATUS" = '200'
+
+          SESSION=$(awk 'BEGIN{IGNORECASE=1} /^mcp-session-id:/ {gsub("\r",""); print $2}' /tmp/init.headers | tail -n1)
+          echo "session=$SESSION"
+
+          echo '--- initialized notification ---'
+          EXTRA=()
+          if [ -n "$SESSION" ]; then EXTRA=(-H "Mcp-Session-Id: $SESSION"); fi
+          curl -sS -i --max-time 30 \
+            -X POST "$URL" \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            "${EXTRA[@]}" \
+            --data '{"jsonrpc":"2.0","method":"notifications/initialized","params":{}}'
+          echo
+
+          echo '--- tools/list ---'
+          curl -sS -i --fail-with-body --max-time 30 \
+            -X POST "$URL" \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            "${EXTRA[@]}" \
+            --data '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}'
