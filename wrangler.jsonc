@@ -1,5 +1,4 @@
 {
-  // Trigger a fresh Workers Build from the cloudflare-worker branch.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "aevren-heartbar",
   "main": "src/index.js",
@@ -14,5 +13,19 @@
   ],
   "observability": {
     "enabled": true
-  }
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "HeartbarMCP",
+        "class_name": "HeartbarMCP"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["HeartbarMCP"]
+    }
+  ]
 }
