@@ -1,20 +1,20 @@
 {
   "name": "aevren-heartbar",
-  "version": "1.0.0",
+  "version": "2.5.0-cf",
   "private": true,
   "type": "module",
-  "description": "Aevren dynamic heart-state card for ChatGPT",
+  "description": "Aevren dynamic heart-state card for ChatGPT on Cloudflare Workers",
   "scripts": {
-    "start": "node server.js",
-    "check": "node --check server.js && node test/layout-stability.test.js"
-  },
-  "engines": {
-    "node": ">=20"
+    "dev": "wrangler dev --config wrangler.toml",
+    "deploy": "wrangler deploy --config wrangler.toml",
+    "check": "node --check src/index.js && node test/layout-stability.test.js"
   },
   "dependencies": {
-    "@modelcontextprotocol/ext-apps": "^1.0.1",
-    "@modelcontextprotocol/sdk": "^1.17.4",
-    "express": "^5.1.0",
-    "zod": "^3.25.76"
+    "@modelcontextprotocol/client": "2.0.0",
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "@modelcontextprotocol/server": "2.0.0",
+    "agents": "0.20.1",
+    "wrangler": "^4.0.0",
+    "zod": "^4.4.3"
   }
 }
