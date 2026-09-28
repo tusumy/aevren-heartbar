@@ -10,3 +10,11 @@ enabled = true
 type = "Text"
 globs = ["**/*.html"]
 fallthrough = true
+
+[[durable_objects.bindings]]
+name = "HeartbarMCP"
+class_name = "HeartbarMCP"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["HeartbarMCP"]
